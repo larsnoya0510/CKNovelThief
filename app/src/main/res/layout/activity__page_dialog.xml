@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools" android:layout_width="wrap_content"
+              android:layout_height="wrap_content" android:layout_margin="1dp" android:divider="@drawable/layourshape"
+              android:background="@color/colorDark" android:showDividers="middle|beginning|end"
+              android:theme="@style/Base.Theme.AppCompat.Dialog" android:layout_gravity="center">
+
+    <Button
+            android:text="@string/prev_page"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:id="@+id/Btn_PrevPage" android:layout_weight="1"
+            android:layout_gravity="center"/>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:layout_weight="1" android:layout_margin="1dp"
+            android:divider="@drawable/layourshape" android:showDividers="middle">
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" android:layout_weight="1"
+                android:showDividers="beginning|end" android:divider="@drawable/layourshape">
+            <EditText
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/tv_NowPage" android:layout_weight="1"
+                    android:textColor="@color/colorWhite" android:gravity="center" android:inputType="numberDecimal"/>
+            <TextView
+                    android:text="/"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent" android:id="@+id/textView8" android:layout_weight="1"
+                    android:textColor="@color/colorWhite" android:gravity="center"/>
+            <TextView
+                    android:text="0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/tv_TotalPage" android:layout_weight="1"
+                    android:textColor="@color/colorWhite" android:gravity="center"/>
+        </LinearLayout>
+        <Button
+                android:text="前往"
+                android:layout_height="wrap_content" android:id="@+id/Btn_TargetPage" android:layout_weight="1"
+                android:layout_width="match_parent"/>
+        <Button
+                android:text="加入書籤"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/Btn_BookMark" android:layout_weight="1"/>
+    </LinearLayout>
+    <Button
+            android:text="@string/next_page"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:id="@+id/Btn_NextPage" android:layout_weight="1"
+            android:layout_gravity="center" android:theme="@android:style/Theme.Holo.Dialog"/>
+</LinearLayout>

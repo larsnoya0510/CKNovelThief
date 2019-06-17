@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CKNovelThief</string>
+    <string name="novellist">小說列表</string>
+    <string name="novel">小說</string>
+    <string name="bookmark">書籤</string>
+    <string name="setting">設定</string>
+    <string name="prev_page">上一頁</string>
+    <string name="next_page">下一頁</string>
+    <string name="select_page">換頁</string>
+</resources>
