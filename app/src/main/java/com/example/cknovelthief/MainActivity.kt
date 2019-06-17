@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity() {
         var mViewPagerAdapter= TabLayout_ViewPagerAdapter(mPageTitleList,m_FragmemtManager)
 
         vp_This.adapter=mViewPagerAdapter
-        vp_This.offscreenPageLimit=3
+        //vp_This.offscreenPageLimit=3
         tl_This.setupWithViewPager(vp_This)
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

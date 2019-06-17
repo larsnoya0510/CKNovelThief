@@ -27,12 +27,13 @@ import com.bumptech.glide.Glide
 import com.example.cknovelthief.DataClass.Global
 import com.example.cknovelthief.DataClass.NovelDataLink
 import com.example.cknovelthief.DataClass.NovelsDataSet
+import com.example.cknovelthief.Model.StatedFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment__novel_list.*
 import org.jsoup.Jsoup
 import java.net.URL
 
-class Fragment_NovelList : Fragment() {
+class Fragment_NovelList : StatedFragment() {
     var mNovelsData = NovelsDataSet()
     companion object {
         val homePageHtml = "https://ck101.com/forum-237-1.html"
@@ -41,6 +42,36 @@ class Fragment_NovelList : Fragment() {
         var nextPageValue: Int = 0
         var totalPageValue: Int = 0
         var nowPageHtml: String = ""
+    }
+
+    override fun onSaveState(outState: Bundle) {
+        super.onSaveState(outState)
+        Log.d("watch","onSaveState")
+        // For example:
+        //outState.putString(text, tvSample.getText().toString());
+        outState.putSerializable("NovelListData",mNovelsData)
+    }
+
+    override fun onRestoreState(savedInstanceState: Bundle?) {
+        super.onRestoreState(savedInstanceState)
+        Log.d("watch","onRestoreState")
+        var mNovelDataLink = NovelDataLink()
+        mNovelsData=savedInstanceState?.getSerializable("NovelListData") as NovelsDataSet
+        recycleViewBinding( mNovelDataLink.getList(mNovelsData))
+    }
+
+    override  fun onFirstTimeLaunched(){
+        Log.d("watch","onFirstTimeLaunched")
+        nowPageHtml=homePageHtml
+        Thread {
+            Runnable {
+                GetHtmlData(nowPageHtml){
+                    //連結recycleView
+                    var mNovelDataLink = NovelDataLink()
+                    recycleViewBinding( mNovelDataLink.getList(mNovelsData))
+                }
+            }.run()
+        }.start()
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,16 +84,7 @@ class Fragment_NovelList : Fragment() {
 
         rv_novelListRecycleView.layoutManager = LinearLayoutManager(this.context)
         reloadSetting()
-        nowPageHtml=homePageHtml
-        Thread {
-            Runnable {
-                GetHtmlData(nowPageHtml){
-                    //連結recycleView
-                    var mNovelDataLink = NovelDataLink()
-                    recycleViewBinding( mNovelDataLink.getList(mNovelsData))
-                }
-            }.run()
-        }.start()
+
     }
 
     override fun onCreateView(

@@ -1,5 +1,6 @@
 package com.example.cknovelthief.ViewPagerAdapter
 
+import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
@@ -21,6 +22,7 @@ class TabLayout_ViewPagerAdapter(
         mFragmentList.add(Fragment_Novel())
         mFragmentList.add(Fragment_Bookmark())
         mFragmentList.add(Fragment_Setting())
+        init_setArguments()
     }
     override fun getItem(postion: Int): Fragment {
         return mFragmentList.get(postion)
@@ -38,5 +40,12 @@ class TabLayout_ViewPagerAdapter(
 
     override fun destroyItem(container: View, position: Int, `object`: Any) {
         //super.destroyItem(container, position, `object`)
+    }
+    fun init_setArguments(){
+        for(i in 0 until mFragmentList.size){
+            var m_bundle= Bundle()
+            m_bundle.putString("hello","hi")
+            mFragmentList[i].arguments=m_bundle
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.example.cknovelthief.DataClass
-
-class NovelsDataSet() {
+import java.io.Serializable
+class NovelsDataSet : Serializable{
     var iconArray: MutableList<String> = mutableListOf<String>()
     var nameArray: MutableList<String> = mutableListOf<String>()
     var linkArray: MutableList<String> = mutableListOf<String>()
