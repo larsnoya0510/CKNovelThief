@@ -44,16 +44,8 @@ open class StatedFragment : Fragment() {
         if (savedState != null) {
             Log.d("watch","saveStateToArguments savedState: "+savedState)
             val b = getArguments()
-//            if(b==null){
-//                Log.d("watch","saveStateToArguments b_null: "+b)
-//                var  arguments = Bundle();
-//                arguments.putBundle("internalSavedViewState_Target",savedState);
-//                this.setArguments(arguments);
-//            }
-//            else{
                 Log.d("watch","saveStateToArguments b: "+b)
                 b?.putBundle("internalSavedViewState_Target", savedState)
-//            }
         }
     }
 
