@@ -42,9 +42,9 @@ open class StatedFragment : Fragment() {
         if (getView() != null)
             savedState = saveState()
         if (savedState != null) {
-            Log.d("watch","saveStateToArguments savedState: "+savedState)
+            //Log.d("watch","saveStateToArguments savedState: "+savedState)
             val b = getArguments()
-                Log.d("watch","saveStateToArguments b: "+b)
+                //Log.d("watch","saveStateToArguments b: "+b)
                 b?.putBundle("internalSavedViewState_Target", savedState)
         }
     }
@@ -56,7 +56,7 @@ open class StatedFragment : Fragment() {
     fun restoreStateFromArguments(): Boolean {
         val b = getArguments()
         savedState = b?.getBundle("internalSavedViewState_Target")
-        Log.d("watch","restoreStateFromArguments savedState: "+savedState)
+        //Log.d("watch","restoreStateFromArguments savedState: "+savedState)
         if (savedState != null) {
             restoreState()
             return true

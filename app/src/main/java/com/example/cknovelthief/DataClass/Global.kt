@@ -16,6 +16,9 @@ class Global {
         val LIST_RESULT_PREV=11
         val LIST_REQUEST_TARGET = 12
         val LIST_RESULT_TARGET = 13
+        val CALL_PAGE_DIALOG=14
+        val TYPE_NOVELLIST=15
+        val TYPE_NOVEL=16
     }
 }
 

@@ -17,10 +17,10 @@ class Activity_PageDialog : AppCompatActivity() {
         var bundle_TotalPageValue= bundle.getInt("totalPageValue",0)
         //限定novel列表下不顯示加入書籤
         var bundle_PageDialogType= bundle.getInt("PageDialogType",-1)
-        if(bundle_PageDialogType==0){
+        if(bundle_PageDialogType==Global.TYPE_NOVELLIST){
             Btn_BookMark.visibility = View.GONE
         }
-        else if(bundle_PageDialogType==1){
+        else if(bundle_PageDialogType==Global.TYPE_NOVEL){
             Btn_BookMark.visibility = View.VISIBLE
         }
         tv_NowPage.setText(bundle_nowPageValue.toString())
@@ -28,10 +28,10 @@ class Activity_PageDialog : AppCompatActivity() {
 
         Btn_PrevPage.setOnClickListener {
 //            setResult(Global.PAGE_RESULT_PREV)
-            if(bundle_PageDialogType==0){
+            if(bundle_PageDialogType==Global.TYPE_NOVELLIST){
                 setResult(Global.LIST_RESULT_PREV)
             }
-            else if(bundle_PageDialogType==1){
+            else if(bundle_PageDialogType==Global.TYPE_NOVEL){
                 setResult(Global.PAGE_RESULT_PREV)
             }
             finish()
@@ -39,10 +39,10 @@ class Activity_PageDialog : AppCompatActivity() {
         Btn_NextPage.setOnClickListener {
             Log.d("watch","Btn_NextPage")
 //            setResult(Global.PAGE_RESULT_NEXT)
-            if(bundle_PageDialogType==0){
+            if(bundle_PageDialogType==Global.TYPE_NOVELLIST){
                 setResult(Global.LIST_RESULT_NEXT)
             }
-            else if(bundle_PageDialogType==1){
+            else if(bundle_PageDialogType==Global.TYPE_NOVEL){
                 setResult(Global.PAGE_RESULT_NEXT)
             }
             finish()
@@ -51,11 +51,11 @@ class Activity_PageDialog : AppCompatActivity() {
             Log.d("Info", "changeTarget" + tv_NowPage.text.toString().toInt())
             intent.putExtra("JumpPage", tv_NowPage.text.toString().toInt())
             //setResult(Global.PAGE_RESULT_TARGET,intent)
-            if(bundle_PageDialogType==0){
-                setResult(Global.LIST_RESULT_TARGET)
+            if(bundle_PageDialogType==Global.TYPE_NOVELLIST){
+                setResult(Global.LIST_RESULT_TARGET,intent)
             }
-            else if(bundle_PageDialogType==1){
-                setResult(Global.PAGE_RESULT_TARGET)
+            else if(bundle_PageDialogType==Global.TYPE_NOVEL){
+                setResult(Global.PAGE_RESULT_TARGET,intent)
             }
             finish()
         }
