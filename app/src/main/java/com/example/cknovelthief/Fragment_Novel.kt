@@ -6,15 +6,28 @@ import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
+import com.bumptech.glide.Glide
 import com.example.cknovelthief.DB.BookmarkDBHelper
 import com.example.cknovelthief.DataClass.Global
+import com.example.cknovelthief.DataClass.NovelDataLink
+import com.example.cknovelthief.Fragment_NovelList.Companion.nextPageValue
+import com.example.cknovelthief.Fragment_NovelList.Companion.nowPageValue
+import com.example.cknovelthief.Fragment_NovelList.Companion.prevPageValue
 import com.example.cknovelthief.Model.StatedFragment
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.fragment__novel.*
 import kotlinx.android.synthetic.main.fragment__novel_list.*
 import kotlinx.android.synthetic.main.fragment__novel_list.editText_nowHtml
@@ -22,28 +35,32 @@ import org.jsoup.Jsoup
 
 
 class Fragment_Novel : StatedFragment() {
-    var nowPageValue: Int = 0
-    var prevPageValue: Int = 0
-    var nextPageValue: Int = 0
-    var TotalPageValue: Int = 0
-    var nowHtml: String = ""
-    var nowTitle: String = ""
-    var nowPageNovelContent: String = ""
-    var nowNovelSets = mutableListOf<String>()
-    var nowNovelSetsCount =0
+    companion object {
+        var nowPageValue: Int = 0
+        var prevPageValue: Int = 0
+        var nextPageValue: Int = 0
+        var TotalPageValue: Int = 0
+        var nowHtml: String = ""
+        var nowTitle: String = ""
+        var nowPageNovelContent: String = ""
+        var nowNovelSets = mutableListOf<String>()
+        var nowNovelSetsCount = 0
+    }
     override fun onSaveState(outState: Bundle) {
         super.onSaveState(outState)
         Log.d("watch", "onSaveState")
         // For example:
         //outState.putString(text, tvSample.getText().toString());
-        outState.putString("NovelData", nowPageNovelContent)
+       //outState.putString("NovelData", nowPageNovelContent)
+        outState.putStringArray("NovelListData", nowNovelSets.toTypedArray())
     }
 
     override fun onRestoreState(savedInstanceState: Bundle?) {
         super.onRestoreState(savedInstanceState)
         Log.d("watch", "onRestoreState")
-        nowPageNovelContent = savedInstanceState?.getString("NovelData")!!
-        loadNovel(nowPageNovelContent)
+        nowNovelSets = savedInstanceState?.getStringArray("NovelListData")!!.toMutableList()
+        //loadNovel(nowPageNovelContent)
+        recycleViewBinding(nowNovelSets)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -70,21 +87,22 @@ class Fragment_Novel : StatedFragment() {
     override fun onStart() {
         super.onStart()
         reloadSetting()
-        tv_webContent.setOnLongClickListener {
-            var intentGetDialog = Intent(this.context, Activity_PageDialog::class.java)
-            var bundle = Bundle()
-            bundle.putInt("nextPageValue", nextPageValue)
-            bundle.putInt("prevPageValue", prevPageValue)
-            bundle.putInt("nowPageValue", nowPageValue)
-            bundle.putInt("totalPageValue", TotalPageValue)
-            bundle.putString("nowPageHtml", nowHtml)
-            bundle.putInt("PageDialogType", Global.TYPE_NOVEL)
-            intentGetDialog.putExtras(bundle)
-            intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-            Log.d("watch", "look requestCode " + Global.CALL_PAGE_DIALOG)
-            (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
-            true
-        }
+        rv_NovelRecycleView.layoutManager = LinearLayoutManager(this.context)
+//        tv_webContent.setOnLongClickListener {
+//            var intentGetDialog = Intent(this.context, Activity_PageDialog::class.java)
+//            var bundle = Bundle()
+//            bundle.putInt("nextPageValue", nextPageValue)
+//            bundle.putInt("prevPageValue", prevPageValue)
+//            bundle.putInt("nowPageValue", nowPageValue)
+//            bundle.putInt("totalPageValue", TotalPageValue)
+//            bundle.putString("nowPageHtml", nowHtml)
+//            bundle.putInt("PageDialogType", Global.TYPE_NOVEL)
+//            intentGetDialog.putExtras(bundle)
+//            intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+//            Log.d("watch", "look requestCode " + Global.CALL_PAGE_DIALOG)
+//            (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
+//            true
+//        }
     }
 
     override fun onFirstTimeLaunched() {
@@ -93,13 +111,14 @@ class Fragment_Novel : StatedFragment() {
 
     fun watchNovelStart() {
         val b = getArguments()
-        Log.d("watch", "look " + b?.getBundle("novelLink").toString() + " " + b?.getBundle("noveltitle").toString())
+        //Log.d("watch", "look " + b?.getBundle("novelLink").toString() + " " + b?.getBundle("noveltitle").toString())
         nowHtml = b?.getString("novelLink")!!
         nowTitle = b?.getString("noveltitle")
         editText_nowHtml.setText(nowHtml)
 //        Thread {
 //            Runnable {
                 handleHtmlWeb(nowHtml)
+        recycleViewBinding(nowNovelSets)
 //            }.run()
 //        }.start()
     }
@@ -118,44 +137,47 @@ class Fragment_Novel : StatedFragment() {
         //套用設定
         editText_nowHtml.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
         editText_nowHtml.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-        tv_webContent.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-        tv_webContent.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
-        tv_webContent.textSize = mfontSize.toFloat()
+//        tv_webContent.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
+//        tv_webContent.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
+//        tv_webContent.textSize = mfontSize.toFloat()
         //}
     }
 
     fun handleHtmlWeb(m_string: String) {
         Thread {
             Runnable {
-
+                nowNovelSets.clear()
                 Log.d("watch", "handleHtmlWeb")
                 val doc = Jsoup.connect(m_string).timeout(60000).maxBodySize(0).get()
                 val select_content = doc.select("body").select("td[class=t_f]")
                 val selectPage_content = doc.select("body").select("div[class=pg]").first().select("a[href],strong")
                 val selectPage_content_content_NowPage =
                     doc.select("body").select("div[class=pg]").first().select("strong")
-                val abpath = javaClass.getResourceAsStream("/assets/web/local.html")
-                var doclocal = Jsoup.parse(abpath, "UTF-8", "http://example.com/")
+//                val abpath = javaClass.getResourceAsStream("/assets/web/local.html")
+//                var doclocal = Jsoup.parse(abpath, "UTF-8", "http://example.com/")
 
                 //Runnable {
                 Log.d("watch", "check Skip A")
                 if (select_content.size > 0) {
                     Log.d("watch", "check Skip B")
-                    val head_content = doclocal.select("head")
-                    var body_content = doclocal.select("body")
-                    body_content.first().text("")
+//                    val head_content = doclocal.select("head")
+//                    var body_content = doclocal.select("body")
+//                    body_content.first().text("")
                     for (i in 0 until select_content.size) {
-                        body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
+                        //body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
                         nowNovelSets.add(i,select_content[i].html().replace(" ", "") + "<br><br>")
+                        Log.d("watch", "i :"+i)
                     }
                     Log.d("watch", "check Skip C")
-                    body_content.add(0, head_content.first())
-                    body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
+                    Log.d("watch", "get nowNovelSets : "+nowNovelSets.size)
+//                    body_content.add(0, head_content.first())
+//                    body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
                     activity!!.runOnUiThread {
-                        tv_webContent.text = ""
-                        mScrollView.smoothScrollTo(0, 0)
-                        nowPageNovelContent = body_content.html()
-                        loadNovel(nowPageNovelContent)
+//                        tv_webContent.text = ""
+//                        mScrollView.smoothScrollTo(0, 0)
+//                        nowPageNovelContent = body_content.html()
+//                        loadNovel(nowPageNovelContent)
+                        recycleViewBinding(nowNovelSets)
                     }
 //                tv_webContent.text=""
 //                mScrollView.smoothScrollTo(0,0)
@@ -194,11 +216,11 @@ class Fragment_Novel : StatedFragment() {
     }
 
     fun loadNovel(mstring: String) {
-        //getActivity()!!.runOnUiThread {
-        Log.d("watch", "check Skip Z")
-            tv_webContent.setText(Html.fromHtml(mstring))
-//        tv_webContent.setText(mstring)
-        //}
+//        //getActivity()!!.runOnUiThread {
+//        Log.d("watch", "check Skip Z")
+//            tv_webContent.setText(Html.fromHtml(mstring))
+////        tv_webContent.setText(mstring)
+//        //}
     }
 
     fun pageJump(m_nowPageHtml: String, nowPage: Int) {
@@ -275,6 +297,102 @@ class Fragment_Novel : StatedFragment() {
                 SqlConnect.insert("bookmark", mdatasets)
                 Toast.makeText(this.context, "已加入書籤", Toast.LENGTH_SHORT).show()
             }
+        }
+    }
+    class novelRecycleViewAdaper(
+        private val context: Context,
+        private val novelList: MutableList<String>
+    ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+        lateinit var mContext: Context
+        val inflater: LayoutInflater = LayoutInflater.from(context)
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+            val view: View = inflater.inflate(R.layout.novel_recycle_linear, parent, false)
+            mContext = parent.getContext()
+            return novelViewHolder(view)
+        }
+
+        override fun getItemCount(): Int {
+            return novelList.size
+        }
+
+        override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+            var vh: novelViewHolder = holder as novelViewHolder
+//            vh.tv_item.text = novelList[position]
+            val abpath = javaClass.getResourceAsStream("/assets/web/local.html")
+            var doclocal = Jsoup.parse(abpath, "UTF-8", "http://example.com/")
+
+            val head_content = doclocal.select("head")
+            var body_content = doclocal.select("body")
+            //Log.d("watch","vh.tv_item: "+body_content.html())
+
+            body_content.first().text("")
+            //body_content.append((123+position).toString().replace(" ", "") + "<br><br>")
+            body_content.append(novelList[position].replace(" ", "") + "<br><br>")
+            body_content.add(0, head_content.first())
+            //body_content.append(novelList[position].replace(" ", "") + "<br><br>")
+
+            body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
+//            Log.d("watch","novelList size: "+novelList.size)
+//            Log.d("watch","novelList[position]"+novelList[position])
+            vh.tv_item.setText(Html.fromHtml(body_content.html()))
+            //vh.tv_item.setText((123+position).toString())
+            vh.tv_item.setOnLongClickListener {
+                var intentGetDialog = Intent(this.context, Activity_PageDialog::class.java)
+                var bundle = Bundle()
+                bundle.putInt("nextPageValue", nextPageValue)
+                bundle.putInt("prevPageValue", prevPageValue)
+                bundle.putInt("nowPageValue", nowPageValue)
+                bundle.putInt("totalPageValue", TotalPageValue)
+                bundle.putString("nowPageHtml", nowHtml)
+                bundle.putInt("PageDialogType", Global.TYPE_NOVEL)
+                intentGetDialog.putExtras(bundle)
+                intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+                Log.d("watch", "look requestCode " + Global.CALL_PAGE_DIALOG)
+                (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
+                true
+            }
+        }
+
+        inner class novelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            var tv_item = view.findViewById<TextView>(R.id.tv_item)
+            var ll_item = view.findViewById<LinearLayout>(R.id.ll_item)
+            //呼叫建構子 預先讀取sharePreferenceProfile設定檔
+            init {
+                loadingSettingValue()
+            }
+
+            //讀取sharePreferenceProfile設定檔
+            fun loadingSettingValue() {
+                var sharePreferenceProfile_Local =
+                    context.getSharedPreferences("LocalProfileSetting", Context.MODE_PRIVATE)
+                tv_item.setTextColor(
+                    Color.rgb(
+                        sharePreferenceProfile_Local.getInt("FontColor_Red", 0),
+                        sharePreferenceProfile_Local.getInt("FontColor_Green", 0),
+                        sharePreferenceProfile_Local.getInt("FontColor_Blue", 0)
+                    )
+                )
+                tv_item.textSize = sharePreferenceProfile_Local.getInt("FontSize", 0).toFloat()
+                ll_item.setBackgroundColor(
+                    Color.rgb(
+                        sharePreferenceProfile_Local.getInt("BackColor_Red", 0),
+                        sharePreferenceProfile_Local.getInt("BackColor_Green", 0),
+                        sharePreferenceProfile_Local.getInt("BackColor_Blue", 0)
+                    )
+                )
+            }
+        }
+    }
+    fun recycleViewBinding(nowNovelSets:MutableList<String>) {
+        Log.d("watch", "recycleViewBinding")
+        getActivity()!!.runOnUiThread {
+            Log.d("watch", "nowNovelSets: "+nowNovelSets.size)
+            val adapter = Fragment_Novel.novelRecycleViewAdaper(this.context!!, nowNovelSets)
+            rv_NovelRecycleView.adapter = adapter
+            rv_NovelRecycleView.itemAnimator = DefaultItemAnimator()
+            var mDivider = DividerItemDecoration(this.context!!, DividerItemDecoration.VERTICAL)
+            rv_NovelRecycleView.addItemDecoration(mDivider)
+            editText_nowHtml.setText(Fragment_Novel.nowHtml)
         }
     }
 }
