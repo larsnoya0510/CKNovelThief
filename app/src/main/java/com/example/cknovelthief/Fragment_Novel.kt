@@ -1,10 +1,15 @@
 package com.example.cknovelthief
 
+import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Parcel
+import android.os.Parcelable
+import android.support.annotation.RequiresApi
 import android.support.v4.app.Fragment
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
@@ -42,29 +47,55 @@ class Fragment_Novel : StatedFragment() {
         var TotalPageValue: Int = 0
         var nowHtml: String = ""
         var nowTitle: String = ""
-        var nowPageNovelContent: String = ""
+
         var nowNovelSets = mutableListOf<String>()
-        var nowNovelSetsCount = 0
+        var recylerViewState: Parcelable? = null
     }
     override fun onSaveState(outState: Bundle) {
         super.onSaveState(outState)
         Log.d("watch", "onSaveState")
-        // For example:
-        //outState.putString(text, tvSample.getText().toString());
-       //outState.putString("NovelData", nowPageNovelContent)
+
         outState.putStringArray("NovelListData", nowNovelSets.toTypedArray())
+//        recylerViewState = rv_NovelRecycleView.getLayoutManager()!!.onSaveInstanceState();
+        outState.putParcelable("recylerViewState", recylerViewState)
+        Log.d("watch", "set recylerViewState " + recylerViewState)
+
     }
 
     override fun onRestoreState(savedInstanceState: Bundle?) {
         super.onRestoreState(savedInstanceState)
         Log.d("watch", "onRestoreState")
         nowNovelSets = savedInstanceState?.getStringArray("NovelListData")!!.toMutableList()
-        //loadNovel(nowPageNovelContent)
         recycleViewBinding(nowNovelSets)
+
+        recylerViewState= savedInstanceState?.getParcelable("recylerViewState")
+        Log.d("watch", "get recylerViewState " +recylerViewState)
+        Log.d("watch", "get layoutManager " +rv_NovelRecycleView.layoutManager)
+//        rv_NovelRecycleView.layoutManager = LinearLayoutManager(this.context)
+//        rv_NovelRecycleView.layoutManager!!.onRestoreInstanceState(recylerViewState);
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        recylerViewState = rv_NovelRecycleView.getLayoutManager()!!.onSaveInstanceState();
+    }
+
+    override fun onStop() {
+        super.onStop()
+        recylerViewState = rv_NovelRecycleView.getLayoutManager()!!.onSaveInstanceState();
+    }
+
+    override fun onPause() {
+        super.onPause()
+        recylerViewState = rv_NovelRecycleView.getLayoutManager()!!.onSaveInstanceState();
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 
     override fun onCreateView(
@@ -72,39 +103,39 @@ class Fragment_Novel : StatedFragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment__novel, container, false)
+        var view: View = inflater.inflate(R.layout.fragment__novel, container, false)
+        var rv_NovelRecycleView = view.findViewById<RecyclerView>(R.id.rv_NovelRecycleView)
+        rv_NovelRecycleView.layoutManager = LinearLayoutManager(this.context)
+        rv_NovelRecycleView.layoutManager!!.onRestoreInstanceState(recylerViewState);
+        return view
     }
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
 
     }
-
     override fun onDetach() {
         super.onDetach()
     }
 
+    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onStart() {
         super.onStart()
-        reloadSetting()
         rv_NovelRecycleView.layoutManager = LinearLayoutManager(this.context)
-//        tv_webContent.setOnLongClickListener {
-//            var intentGetDialog = Intent(this.context, Activity_PageDialog::class.java)
-//            var bundle = Bundle()
-//            bundle.putInt("nextPageValue", nextPageValue)
-//            bundle.putInt("prevPageValue", prevPageValue)
-//            bundle.putInt("nowPageValue", nowPageValue)
-//            bundle.putInt("totalPageValue", TotalPageValue)
-//            bundle.putString("nowPageHtml", nowHtml)
-//            bundle.putInt("PageDialogType", Global.TYPE_NOVEL)
-//            intentGetDialog.putExtras(bundle)
-//            intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-//            Log.d("watch", "look requestCode " + Global.CALL_PAGE_DIALOG)
-//            (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
-//            true
-//        }
-    }
+        reloadSetting()
 
+        rv_NovelRecycleView.layoutManager = LinearLayoutManager(this.context)
+        rv_NovelRecycleView.layoutManager!!.onRestoreInstanceState(recylerViewState);
+    }
+    override fun onResume() {
+        super.onResume()
+        rv_NovelRecycleView.layoutManager = LinearLayoutManager(this.context)
+        rv_NovelRecycleView.layoutManager!!.onRestoreInstanceState(recylerViewState);
+    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        //rv_NovelRecycleView.setOnScrollChangeListener(Fragment_Novel.this)
+    }
     override fun onFirstTimeLaunched() {
 
     }
@@ -117,7 +148,7 @@ class Fragment_Novel : StatedFragment() {
         editText_nowHtml.setText(nowHtml)
 //        Thread {
 //            Runnable {
-                handleHtmlWeb(nowHtml)
+        handleHtmlWeb(nowHtml)
         recycleViewBinding(nowNovelSets)
 //            }.run()
 //        }.start()
@@ -165,15 +196,15 @@ class Fragment_Novel : StatedFragment() {
 //                    body_content.first().text("")
                     for (i in 0 until select_content.size) {
                         //body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
-                        nowNovelSets.add(i,select_content[i].html().replace(" ", "") + "<br><br>")
-                        Log.d("watch", "i :"+i)
+                        nowNovelSets.add(i, select_content[i].html().replace(" ", "") + "<br><br>")
+                        Log.d("watch", "i :" + i)
                     }
                     Log.d("watch", "check Skip C")
-                    Log.d("watch", "get nowNovelSets : "+nowNovelSets.size)
+                    Log.d("watch", "get nowNovelSets : " + nowNovelSets.size)
 //                    body_content.add(0, head_content.first())
 //                    body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
                     activity!!.runOnUiThread {
-//                        tv_webContent.text = ""
+                        //                        tv_webContent.text = ""
 //                        mScrollView.smoothScrollTo(0, 0)
 //                        nowPageNovelContent = body_content.html()
 //                        loadNovel(nowPageNovelContent)
@@ -238,7 +269,7 @@ class Fragment_Novel : StatedFragment() {
             jumpingPage = cutAgain.substring(0, cutStart + 1) + nowPageValue.toString() + "-1.html"
             nowHtml = jumpingPage
             activity!!.runOnUiThread {
-                Log.d("watch","check Skip H")
+                Log.d("watch", "check Skip H")
                 editText_nowHtml.setText(nowHtml)
             }
         } else if (m_nowPageHtml.contains("mod=viewthread")) {
@@ -246,13 +277,13 @@ class Fragment_Novel : StatedFragment() {
             jumpingPage = m_nowPageHtml.substring(0, cutStart + 1) + nowPageValue.toString()
             nowHtml = jumpingPage
             activity!!.runOnUiThread {
-                Log.d("watch","check Skip I")
+                Log.d("watch", "check Skip I")
                 editText_nowHtml.setText(nowHtml)
             }
         }
 //        Thread {
-            Log.d("watch","check Skip J")
-            handleHtmlWeb(jumpingPage)
+        Log.d("watch", "check Skip J")
+        handleHtmlWeb(jumpingPage)
 //        }.start()
 
     }
@@ -299,6 +330,7 @@ class Fragment_Novel : StatedFragment() {
             }
         }
     }
+
     class novelRecycleViewAdaper(
         private val context: Context,
         private val novelList: MutableList<String>
@@ -356,6 +388,7 @@ class Fragment_Novel : StatedFragment() {
         inner class novelViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             var tv_item = view.findViewById<TextView>(R.id.tv_item)
             var ll_item = view.findViewById<LinearLayout>(R.id.ll_item)
+
             //呼叫建構子 預先讀取sharePreferenceProfile設定檔
             init {
                 loadingSettingValue()
@@ -383,16 +416,35 @@ class Fragment_Novel : StatedFragment() {
             }
         }
     }
-    fun recycleViewBinding(nowNovelSets:MutableList<String>) {
+
+    fun recycleViewBinding(nowNovelSets: MutableList<String>) {
         Log.d("watch", "recycleViewBinding")
         getActivity()!!.runOnUiThread {
-            Log.d("watch", "nowNovelSets: "+nowNovelSets.size)
+            Log.d("watch", "nowNovelSets: " + nowNovelSets.size)
             val adapter = Fragment_Novel.novelRecycleViewAdaper(this.context!!, nowNovelSets)
             rv_NovelRecycleView.adapter = adapter
             rv_NovelRecycleView.itemAnimator = DefaultItemAnimator()
             var mDivider = DividerItemDecoration(this.context!!, DividerItemDecoration.VERTICAL)
             rv_NovelRecycleView.addItemDecoration(mDivider)
             editText_nowHtml.setText(Fragment_Novel.nowHtml)
+        }
+    }
+
+    /** * RecyclerView 移动到当前位置，
+     *  * * @param manager 设置RecyclerView对应的manager
+     *  * @param mRecyclerView 当前的RecyclerView
+     *  * @param n 要跳转的位置
+     *  */
+    fun MoveToPosition(manager: LinearLayoutManager, mRecyclerView: RecyclerView, n: Int) {
+        val firstItem = manager.findFirstVisibleItemPosition()
+        val lastItem = manager.findLastVisibleItemPosition()
+        if (n <= firstItem) {
+            mRecyclerView.scrollToPosition(n)
+        } else if (n <= lastItem) {
+            val top = mRecyclerView.getChildAt(n - firstItem).top
+            mRecyclerView.scrollBy(0, top)
+        } else {
+            mRecyclerView.scrollToPosition(n)
         }
     }
 }
