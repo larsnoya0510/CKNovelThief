@@ -20,6 +20,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebSettings
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -47,7 +48,7 @@ class Fragment_Novel : StatedFragment() {
         var TotalPageValue: Int = 0
         var nowHtml: String = ""
         var nowTitle: String = ""
-
+        var nowWebNovel : String =""
         var nowNovelSets = mutableListOf<String>()
         var recylerViewState: Parcelable? = null
     }
@@ -59,7 +60,7 @@ class Fragment_Novel : StatedFragment() {
 //        recylerViewState = rv_NovelRecycleView.getLayoutManager()!!.onSaveInstanceState();
         outState.putParcelable("recylerViewState", recylerViewState)
         Log.d("watch", "set recylerViewState " + recylerViewState)
-
+        outState.putString("nowWebNovel", nowWebNovel)
     }
 
     override fun onRestoreState(savedInstanceState: Bundle?) {
@@ -71,6 +72,9 @@ class Fragment_Novel : StatedFragment() {
         recylerViewState= savedInstanceState?.getParcelable("recylerViewState")
         Log.d("watch", "get recylerViewState " +recylerViewState)
         Log.d("watch", "get layoutManager " +rv_NovelRecycleView.layoutManager)
+
+        nowWebNovel= savedInstanceState?.getString("nowWebNovel")
+        loadNovel(nowWebNovel)
 //        rv_NovelRecycleView.layoutManager = LinearLayoutManager(this.context)
 //        rv_NovelRecycleView.layoutManager!!.onRestoreInstanceState(recylerViewState);
     }
@@ -168,6 +172,13 @@ class Fragment_Novel : StatedFragment() {
         //套用設定
         editText_nowHtml.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
         editText_nowHtml.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
+        var mWebSettings=wv_Novel.settings
+        mWebSettings.textZoom=150
+        mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        mWebSettings.setBlockNetworkImage(true);
+        mWebSettings.setLoadsImagesAutomatically(true);
+        mWebSettings.setGeolocationEnabled(false);
+        mWebSettings.setNeedInitialFocus(false);
 //        tv_webContent.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
 //        tv_webContent.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
 //        tv_webContent.textSize = mfontSize.toFloat()
@@ -184,31 +195,33 @@ class Fragment_Novel : StatedFragment() {
                 val selectPage_content = doc.select("body").select("div[class=pg]").first().select("a[href],strong")
                 val selectPage_content_content_NowPage =
                     doc.select("body").select("div[class=pg]").first().select("strong")
-//                val abpath = javaClass.getResourceAsStream("/assets/web/local.html")
-//                var doclocal = Jsoup.parse(abpath, "UTF-8", "http://example.com/")
+                val abpath = javaClass.getResourceAsStream("/assets/web/local.html")
+                var doclocal = Jsoup.parse(abpath, "UTF-8", "http://example.com/")
 
                 //Runnable {
                 Log.d("watch", "check Skip A")
                 if (select_content.size > 0) {
                     Log.d("watch", "check Skip B")
-//                    val head_content = doclocal.select("head")
-//                    var body_content = doclocal.select("body")
-//                    body_content.first().text("")
+                    val head_content = doclocal.select("head")
+                    var body_content = doclocal.select("body")
+                    body_content.first().text("")
                     for (i in 0 until select_content.size) {
-                        //body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
-                        nowNovelSets.add(i, select_content[i].html().replace(" ", "") + "<br><br>")
+                        body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
+                        //nowNovelSets.add(i, select_content[i].html().replace(" ", "") + "<br><br>")
                         Log.d("watch", "i :" + i)
                     }
                     Log.d("watch", "check Skip C")
                     Log.d("watch", "get nowNovelSets : " + nowNovelSets.size)
-//                    body_content.add(0, head_content.first())
-//                    body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
+                    body_content.add(0, head_content.first())
+                    body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
                     activity!!.runOnUiThread {
                         //                        tv_webContent.text = ""
 //                        mScrollView.smoothScrollTo(0, 0)
 //                        nowPageNovelContent = body_content.html()
-//                        loadNovel(nowPageNovelContent)
-                        recycleViewBinding(nowNovelSets)
+
+                        nowWebNovel=body_content.html()
+                        loadNovel(nowWebNovel)
+                        //recycleViewBinding(nowNovelSets)
                     }
 //                tv_webContent.text=""
 //                mScrollView.smoothScrollTo(0,0)
@@ -252,6 +265,7 @@ class Fragment_Novel : StatedFragment() {
 //            tv_webContent.setText(Html.fromHtml(mstring))
 ////        tv_webContent.setText(mstring)
 //        //}
+        wv_Novel.loadDataWithBaseURL("", mstring, "text/html", "UTF-8", "");
     }
 
     fun pageJump(m_nowPageHtml: String, nowPage: Int) {
