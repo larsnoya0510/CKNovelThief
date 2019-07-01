@@ -19,7 +19,8 @@ class TabLayout_ViewPagerAdapter(
     var mFragmentList=ArrayList<Fragment>()
     init{
         mFragmentList.add(Fragment_NovelList())
-        mFragmentList.add(Fragment_Novel())
+//        mFragmentList.add(Fragment_Novel())
+        mFragmentList.add(Fragment_Bookmark())
         mFragmentList.add(Fragment_Bookmark())
         mFragmentList.add(Fragment_Setting())
         init_setArguments()

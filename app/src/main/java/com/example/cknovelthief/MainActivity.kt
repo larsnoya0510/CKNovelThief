@@ -8,13 +8,14 @@ import android.support.v4.app.FragmentManager
 import com.example.cknovelthief.ViewPagerAdapter.TabLayout_ViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import android.R.attr.data
-
+import android.util.Log
 
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("AAAA","onCreate")
         setContentView(R.layout.activity_main)
         var m_FragmemtManager =supportFragmentManager
         var  mPageTitleList=ArrayList<String>()
