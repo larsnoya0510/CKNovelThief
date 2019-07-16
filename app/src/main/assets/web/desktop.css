@@ -1,0 +1,16 @@
+@charset "utf-8";
+body {
+	background-color: #66CC00;
+}
+
+body, td, th, h3, h6 {
+	color: #330000;
+}
+
+h1, h2, h4, h5 {
+  color: #660000;
+}
+
+a {
+	color: #003366;
+}
