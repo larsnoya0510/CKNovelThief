@@ -23,6 +23,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -32,6 +33,9 @@ import com.example.cknovelthief.Model.StatedFragment
 import kotlinx.android.synthetic.main.fragment__novel.*
 import kotlinx.android.synthetic.main.fragment__novel_list.editText_nowHtml
 import org.jsoup.Jsoup
+import org.jsoup.select.Elements
+import org.w3c.dom.Element
+import java.net.URL
 
 
 class Fragment_Novel : StatedFragment() {
@@ -46,6 +50,7 @@ class Fragment_Novel : StatedFragment() {
         var nowNovelSets = mutableListOf<String>()
         var recylerViewState: Parcelable? = null
         var nowScrollWebView =0
+        var fontColor  = Color.rgb(0,0,0)
     }
     override fun onSaveState(outState: Bundle) {
         super.onSaveState(outState)
@@ -114,6 +119,7 @@ class Fragment_Novel : StatedFragment() {
             (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
             true
         }
+        reloadSetting(view)
         return view
     }
     override fun onAttach(context: Context) {
@@ -129,7 +135,7 @@ class Fragment_Novel : StatedFragment() {
     override fun onStart() {
         super.onStart()
         Log.d("watch", "onStart Novel")
-        reloadSetting()
+
     }
     override fun onResume() {
         super.onResume()
@@ -153,7 +159,7 @@ class Fragment_Novel : StatedFragment() {
         //recycleViewBinding(nowNovelSets)
     }
 
-    fun reloadSetting() {
+    fun reloadSetting(view :View) {
         //runOnUiThread {
         Log.d("watch", "reloadSetting Novel")
         var sharePreferenceProfile_Local =
@@ -166,16 +172,20 @@ class Fragment_Novel : StatedFragment() {
         var mBackColor_G = sharePreferenceProfile_Local.getInt("BackColor_Green", 0)
         var mBackColor_B = sharePreferenceProfile_Local.getInt("BackColor_Blue", 0)
         //套用設定
+        var editText_nowHtml=view.findViewById<EditText>(R.id.editText_nowHtml)
         editText_nowHtml.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
         editText_nowHtml.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-
+        var wv_Novel=view.findViewById<WebView>(R.id.wv_Novel)
+        //wv_Novel.setBackgroundColor(Color.rgb(mBackColor_R,mBackColor_G,mBackColor_B))
         var mWebSettings=wv_Novel.settings
-        mWebSettings.textZoom=150
+        //mWebSettings.textZoom=150
+        fontColor=Color.rgb(mfontColor_R,mfontColor_G,mfontColor_B)
         mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         mWebSettings.setBlockNetworkImage(true);
         mWebSettings.setLoadsImagesAutomatically(true);
         mWebSettings.setGeolocationEnabled(false);
         mWebSettings.setNeedInitialFocus(false);
+        mWebSettings.setDefaultFontSize(mfontSize);
     }
 
     fun handleHtmlWeb(m_string: String) {
@@ -184,9 +194,14 @@ class Fragment_Novel : StatedFragment() {
             Runnable {
                 nowNovelSets.clear()
                 Log.d("watch", "handleHtmlWeb")
-               var  response  =Jsoup.connect(m_string).timeout(60000).maxBodySize(0).followRedirects(false).execute()
+                var url: URL = URL(m_string)
+                var response = Jsoup.connect(url.toString()).followRedirects(true).execute()
+                val response2 = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).get()
+                //var response = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).followRedirects(false).execute()
+                //var  response  =Jsoup.connect(m_string).timeout(60000).maxBodySize(0).followRedirects(false).execute()
                 if(response.statusCode()== 200) {
-                    val doc = Jsoup.connect(m_string).timeout(60000).maxBodySize(0).get()
+                    //val doc = Jsoup.connect(m_string).timeout(60000).maxBodySize(0).get()
+                    val doc = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).get()
                     val select_content = doc.select("body").select("td[class=t_f]")
                     val selectPage_content = doc.select("body").select("div[class=pg]").first().select("a[href],strong")
                     val selectPage_content_content_NowPage =
@@ -197,16 +212,13 @@ class Fragment_Novel : StatedFragment() {
                     //Runnable {
                     Log.d("watch", "check Skip A")
                     if (select_content.size > 0) {
-//                    Log.d("watch", "check Skip B")
                         val head_content = doclocal.select("head")
                         var body_content = doclocal.select("body")
+                        //var font_content = doclocal.select("font").first()
                         body_content.first().text("")
                         for (i in 0 until select_content.size) {
                             body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
-                            //Log.d("watch", "i :" + i)
                         }
-//                    Log.d("watch", "check Skip C")
-//                    Log.d("watch", "get nowNovelSets : " + nowNovelSets.size)
                         body_content.add(0, head_content.first())
                         body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
                         activity!!.runOnUiThread {
