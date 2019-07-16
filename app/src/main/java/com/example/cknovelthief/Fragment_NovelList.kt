@@ -64,9 +64,11 @@ class Fragment_NovelList : StatedFragment() {
             Runnable {
                 GetHtmlData(nowPageHtml) {
                     Log.d("watch", "go GetHtmlData Novelist")
-                    //連結recycleView
-                    var mNovelDataLink = NovelDataLink()
-                    recycleViewBinding(mNovelDataLink.getList(mNovelsData))
+                    if(mNovelsData.iconArray.size>0) {
+                        //連結recycleView
+                        var mNovelDataLink = NovelDataLink()
+                        recycleViewBinding(mNovelDataLink.getList(mNovelsData))
+                    }
                 }
             }.run()
         }.start()
@@ -92,16 +94,6 @@ class Fragment_NovelList : StatedFragment() {
         Log.d("watch", "onCreateView Novelist")
         //return inflater.inflate(R.layout.fragment__novel_list, container, false)
         var view :View = inflater.inflate(R.layout.fragment__novel_list, container, false)
-//        Thread {
-//            Runnable {
-//                GetHtmlData(nowPageHtml) {
-//                    Log.d("watch", "go GetHtmlData Novelist")
-//                    //連結recycleView
-//                    var mNovelDataLink = NovelDataLink()
-//                    recycleViewBinding(mNovelDataLink.getList(mNovelsData))
-//                }
-//            }.run()
-//        }.start()
 
         return view
     }
