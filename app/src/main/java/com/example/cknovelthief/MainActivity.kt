@@ -28,7 +28,6 @@ class MainActivity : AppCompatActivity() {
             netWorkTest()
         }
     }
-
     private fun initUniTest() {
         networkStateTest = false //測試網路
     }
