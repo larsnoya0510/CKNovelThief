@@ -26,6 +26,10 @@ import java.net.URL
 
 class Fragment_NovelList : StatedFragment() {
     var mNovelsData = NovelsDataSet()
+    lateinit var editText_nowHtml: EditText
+    lateinit var llayout_main: LinearLayout
+    lateinit var rv_novelListRecycleView: RecyclerView
+    var textSize=0F
 
     companion object {
         val homePageHtml = "https://ck101.com/forum-237-1.html"
@@ -80,8 +84,7 @@ class Fragment_NovelList : StatedFragment() {
         Log.d("watch", "onCreateView Novelist")
         //return inflater.inflate(R.layout.fragment__novel_list, container, false)
         var view: View = inflater.inflate(R.layout.fragment__novel_list, container, false)
-        var rv_novelListRecycleView = view.findViewById<RecyclerView>(R.id.rv_novelListRecycleView)
-        rv_novelListRecycleView.layoutManager = LinearLayoutManager(this.context)
+        initView(view)
         reloadSetting(view)
         return view
     }
@@ -91,12 +94,12 @@ class Fragment_NovelList : StatedFragment() {
         Log.d("watch", "onAttach Novelist")
     }
 
-    fun reloadSetting(view :View) {
+    fun reloadSetting(view: View) {
         Log.d("watch", "reloadSetting Novelist")
         getActivity()!!.runOnUiThread {
             var sharePreferenceProfile_Local =
                 this.getActivity()!!.getSharedPreferences("LocalProfileSetting", Context.MODE_PRIVATE)
-            var mfontSize = sharePreferenceProfile_Local.getInt("FontSize", 0)
+            var mfontSize = sharePreferenceProfile_Local.getInt("ListFontSize", 0)
             var mfontColor_R = sharePreferenceProfile_Local.getInt("FontColor_Red", 0)
             var mfontColor_G = sharePreferenceProfile_Local.getInt("FontColor_Green", 0)
             var mfontColor_B = sharePreferenceProfile_Local.getInt("FontColor_Blue", 0)
@@ -104,14 +107,19 @@ class Fragment_NovelList : StatedFragment() {
             var mBackColor_G = sharePreferenceProfile_Local.getInt("BackColor_Green", 0)
             var mBackColor_B = sharePreferenceProfile_Local.getInt("BackColor_Blue", 0)
             //套用設定
-            var editText_nowHtml= view.findViewById<EditText>(R.id.editText_nowHtml)
             editText_nowHtml.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
             editText_nowHtml.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-            var llayout_main= view.findViewById<LinearLayout>(R.id.llayout_main)
             llayout_main.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-            var rv_novelListRecycleView= view.findViewById<RecyclerView>(R.id.rv_novelListRecycleView)
             rv_novelListRecycleView.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
+            textSize=mfontSize.toFloat()
         }
+    }
+
+    fun initView(view: View) {
+        editText_nowHtml = view.findViewById<EditText>(R.id.editText_nowHtml)
+        llayout_main = view.findViewById<LinearLayout>(R.id.llayout_main)
+        rv_novelListRecycleView = view.findViewById<RecyclerView>(R.id.rv_novelListRecycleView)
+        rv_novelListRecycleView.layoutManager = LinearLayoutManager(this.context)
     }
 
     fun GetHtmlData(urlString: String, callback: () -> Unit) {
@@ -174,7 +182,7 @@ class Fragment_NovelList : StatedFragment() {
     fun recycleViewBinding(mNovelDataLinkList: MutableList<NovelDataLink>) {
         Log.d("watch", "recycleViewBinding Novelist")
         getActivity()!!.runOnUiThread {
-            val adapter = novelRecycleViewAdaper(this.context!!, mNovelDataLinkList, Color.GREEN)
+            val adapter = novelRecycleViewAdaper(this.context!!, mNovelDataLinkList, textSize)
             rv_novelListRecycleView.adapter = adapter
             rv_novelListRecycleView.itemAnimator = DefaultItemAnimator()
             var mDivider = DividerItemDecoration(this.context!!, DividerItemDecoration.VERTICAL)
@@ -186,7 +194,7 @@ class Fragment_NovelList : StatedFragment() {
     class novelRecycleViewAdaper(
         private val context: Context,
         private val novelList: MutableList<NovelDataLink>,
-        private val background: Int
+        private val textSize: Float
     ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         lateinit var mContext: Context
         val inflater: LayoutInflater = LayoutInflater.from(context)
@@ -209,6 +217,7 @@ class Fragment_NovelList : StatedFragment() {
                 Glide.with(this.context).load(novelList[position].icon).into(holder.iv_icon)
             }
             vh.tv_name.text = novelList[position].name
+            vh.tv_name.textSize=textSize
             vh.tv_desc.text = novelList[position].link
             vh.ll_item.setOnClickListener {
                 //開啟小說頁面

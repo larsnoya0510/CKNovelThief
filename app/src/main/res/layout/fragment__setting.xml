@@ -1,14 +1,201 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
+             xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context=".Fragment_Setting">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="@string/setting"/>
+            tools:context=".Activity_Novel_Setting" android:orientation="vertical" android:layout_margin="5dp">
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+            <TextView
+                    android:text="設定文字大小"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/textView11" android:textSize="18sp"
+                    android:layout_weight="1" android:layout_marginLeft="5dp"/>
+            <RadioGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:layout_weight="1" android:orientation="horizontal"
+                    android:layout_margin="5dp">
+                <RadioButton
+                        android:text="列表"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/rb_list" android:layout_weight="1"
+                        android:checked="true"/>
+                <RadioButton
+                        android:text="內文"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" android:id="@+id/rb_novel" android:layout_weight="1"/>
+            </RadioGroup>
+            <Button
+                    android:text="儲存"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" android:id="@+id/btn_save" android:layout_weight="1"
+            />
+        </LinearLayout>
+        <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/seekBar_NovelListtextsize" android:layout_margin="5dp"
+                android:max="50" style="@android:style/Widget.Holo.SeekBar"/>
+        <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/seekBar_Noveltextsize" android:layout_margin="5dp"
+                android:max="50" style="@android:style/Widget.Holo.SeekBar" android:visibility="gone"/>
+        <TextView
+                android:text="設定文字顏色"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView13" android:textSize="18sp"
+                android:layout_margin="2dp"/>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_margin="3dp">
+            <TextView
+                    android:text="R"
+                    android:layout_width="38dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_fontColorRed_title"
+                    android:textSize="24sp" android:ems="1"
+                    android:textColor="@android:color/holo_red_dark" android:layout_marginTop="8dp"
+                    android:gravity="center"
+            />
+            <TextView
+                    android:text="0"
+                    android:layout_width="47dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_fontColorRed"
+                    android:textSize="24sp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"/>
+            <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/seekBar_fontColorRed"
+                    android:layout_marginTop="16dp"
+                    android:max="255" style="@android:style/Widget.Holo.SeekBar"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_margin="3dp">
+            <TextView
+                    android:text="G"
+                    android:layout_width="38dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_fontColorGreen_title"
+                    android:textSize="24sp" android:ems="1"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:gravity="center"/>
+            <TextView
+                    android:text="0"
+                    android:layout_width="47dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_fontColorGreen"
+                    android:textSize="24sp"
+                    android:gravity="center"/>
+            <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/seekBar_fontColorGreen"
+                    android:max="255" style="@android:style/Widget.Holo.SeekBar"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_margin="3dp">
+            <TextView
+                    android:text="B"
+                    android:layout_width="38dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_fontColorBlue_title"
+                    android:textSize="24sp" android:ems="1"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:gravity="center"/>
+            <TextView
+                    android:text="0"
+                    android:layout_width="47dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_fontColorBlue"
+                    android:textSize="24sp"
+                    android:gravity="center"/>
+            <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/seekBar_fontColorBlue"
+                    android:max="255" style="@android:style/Widget.Holo.SeekBar"/>
+        </LinearLayout>
+        <TextView
+                android:text="設定背景顏色"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/textView18" android:textSize="18sp"
+                android:layout_margin="2dp"/>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_margin="3dp">
+            <TextView
+                    android:text="R"
+                    android:layout_width="38dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_backColorRed_title"
+                    android:textSize="24sp" android:ems="1"
+                    android:textColor="@android:color/holo_red_dark" android:layout_marginTop="8dp"
+                    android:gravity="center"
+            />
+            <TextView
+                    android:text="255"
+                    android:layout_width="47dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_backColorRed"
+                    android:textSize="24sp"
+                    android:layout_marginTop="8dp"
+                    android:gravity="center"/>
+            <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/seekBar_backColorRed"
+                    android:layout_marginTop="16dp"
+                    android:max="255" android:progress="255" style="@android:style/Widget.Holo.SeekBar"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_margin="3dp">
+            <TextView
+                    android:text="G"
+                    android:layout_width="38dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_backColorGreen_title"
+                    android:textSize="24sp" android:ems="1"
+                    android:textColor="@android:color/holo_green_dark"
+                    android:gravity="center"/>
+            <TextView
+                    android:text="255"
+                    android:layout_width="47dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_backColorGreen"
+                    android:textSize="24sp"
+                    android:gravity="center"/>
+            <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/seekBar_backColorGreen"
+                    android:max="255" android:progress="255" style="@android:style/Widget.Holo.SeekBar"/>
+        </LinearLayout>
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_margin="3dp">
+            <TextView
+                    android:text="B"
+                    android:layout_width="38dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_backColorBlue_title"
+                    android:textSize="24sp" android:ems="1"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:gravity="center"/>
+            <TextView
+                    android:text="255"
+                    android:layout_width="47dp"
+                    android:layout_height="wrap_content" android:id="@+id/tv_backColorBlue"
+                    android:textSize="24sp"
+                    android:gravity="center"/>
+            <SeekBar
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" android:id="@+id/seekBar_backColorBlue"
+                    android:max="255" android:progress="255" style="@android:style/Widget.Holo.SeekBar"/>
+        </LinearLayout>
+        <TextView
+                android:text="我是文字"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" android:id="@+id/tv_ExampleText" android:textSize="8sp"
+                android:layout_margin="5dp" tools:layout_editor_absoluteX="5dp" android:gravity="center"
+                android:background="@color/colorDark" android:layout_gravity="center"/>
+    </LinearLayout>
 
 </FrameLayout>

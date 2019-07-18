@@ -164,7 +164,7 @@ class Fragment_Novel : StatedFragment() {
         Log.d("watch", "reloadSetting Novel")
         var sharePreferenceProfile_Local =
             this.getActivity()!!.getSharedPreferences("LocalProfileSetting", Context.MODE_PRIVATE)
-        var mfontSize = sharePreferenceProfile_Local.getInt("FontSize", 0)
+        var mfontSize = sharePreferenceProfile_Local.getInt("NovelFontSize", 0)
         var mfontColor_R = sharePreferenceProfile_Local.getInt("FontColor_Red", 0)
         var mfontColor_G = sharePreferenceProfile_Local.getInt("FontColor_Green", 0)
         var mfontColor_B = sharePreferenceProfile_Local.getInt("FontColor_Blue", 0)
