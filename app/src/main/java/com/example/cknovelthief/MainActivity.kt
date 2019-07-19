@@ -3,6 +3,8 @@ package com.example.cknovelthief
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.view.PagerAdapter
+import android.support.v4.view.ViewPager
 import com.example.cknovelthief.ViewPagerAdapter.TabLayout_ViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import android.util.Log
@@ -53,10 +55,30 @@ class MainActivity : AppCompatActivity() {
         mPageTitleList.add(getResources().getString(R.string.bookmark))
         mPageTitleList.add(getResources().getString(R.string.setting))
         var mViewPagerAdapter = TabLayout_ViewPagerAdapter(mPageTitleList, m_FragmemtManager)
-
         vp_This.adapter = mViewPagerAdapter
         //vp_This.offscreenPageLimit=3
         tl_This.setupWithViewPager(vp_This)
+        vp_This.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
+            override fun onPageScrollStateChanged(p0: Int) {
+
+            }
+
+            override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
+
+            }
+
+            override fun onPageSelected(p0: Int) {
+                if(p0==2){
+                    var fm = supportFragmentManager
+                    for(i in 0 until fm.fragments.size){
+                        if(fm.fragments[i] is Fragment_Bookmark){
+                            (fm.fragments[i] as Fragment_Bookmark).queryBookmarkList()
+                        }
+                    }
+                }
+            }
+
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -230,10 +230,17 @@ class Fragment_NovelList : StatedFragment() {
                 var m_bundle = Bundle()
                 m_bundle.putString("novelLink", novelList[position].link)
                 m_bundle.putString("noveltitle", novelList[position].name)
-                fm.fragments[1].arguments = m_bundle
-                Log.d("watch", "start watchNovelStart")
-                (fm.fragments[1] as Fragment_Novel).watchNovelStart()
-                (this.context as MainActivity).vp_This.setCurrentItem(1)
+//                fm.fragments[1].arguments = m_bundle
+//                Log.d("watch", "start watchNovelStart")
+//                (fm.fragments[1] as Fragment_Novel).watchNovelStart()
+//                (this.context as MainActivity).vp_This.setCurrentItem(1)
+                for(i in 0 until fm.fragments.size){
+                    if(fm.fragments[i] is Fragment_Novel){
+                        fm.fragments[i].arguments = m_bundle
+                        (fm.fragments[i] as Fragment_Novel).watchNovelStart()
+                        (this.context as MainActivity).vp_This.setCurrentItem(1)
+                    }
+                }
             }
             vh.ll_item.setOnLongClickListener {
                 //呼叫換頁視窗

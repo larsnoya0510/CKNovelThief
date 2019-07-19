@@ -152,4 +152,9 @@ class BookmarkDBHelper(var context: Context) :
             }
             return bookmarkList
         }
+        fun clear(){
+            titleArray.clear()
+            htmlArray.clear()
+            idArray.clear()
+        }
     }
