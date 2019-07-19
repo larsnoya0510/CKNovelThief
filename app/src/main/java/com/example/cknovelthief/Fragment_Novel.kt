@@ -37,7 +37,6 @@ import org.jsoup.select.Elements
 import org.w3c.dom.Element
 import java.net.URL
 
-
 class Fragment_Novel : StatedFragment() {
     companion object {
         var nowPageValue: Int = 0
