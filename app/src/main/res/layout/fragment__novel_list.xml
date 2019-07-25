@@ -25,5 +25,9 @@
                 android:layout_height="match_parent" android:id="@+id/rv_novelListRecycleView">
         </android.support.v7.widget.RecyclerView>
     </LinearLayout>
-
+    <ImageView
+            android:src="@drawable/ckt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/iv_ListLoading" android:visibility="visible"
+            android:scaleType="fitXY"/>
 </FrameLayout>

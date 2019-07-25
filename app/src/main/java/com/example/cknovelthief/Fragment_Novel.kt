@@ -16,17 +16,16 @@ import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
 import android.text.Html
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import com.example.cknovelthief.DB.BookmarkDBHelper
 import com.example.cknovelthief.DataClass.Global
 import com.example.cknovelthief.Model.StatedFragment
@@ -38,6 +37,8 @@ import org.w3c.dom.Element
 import java.net.URL
 
 class Fragment_Novel : StatedFragment() {
+    private lateinit var loadingView: View
+    private lateinit var ComeBackView :View
     companion object {
         var nowPageValue: Int = 0
         var prevPageValue: Int = 0
@@ -49,13 +50,15 @@ class Fragment_Novel : StatedFragment() {
         var nowNovelSets = mutableListOf<String>()
         var recylerViewState: Parcelable? = null
         var nowScrollWebView =0
-        var fontColor  = Color.rgb(0,0,0)
+        //var fontColor  = Color.rgb(0,0,0)
+        var fontColor = ""
     }
     override fun onSaveState(outState: Bundle) {
         super.onSaveState(outState)
         Log.d("watch", "onSaveState Novel")
         outState.putString("nowWebNovel", nowWebNovel)
-        nowScrollWebView=wv_Novel.scrollY
+        //nowScrollWebView=wv_Novel.scrollY
+        nowScrollWebView=mScrollView.scrollY
         outState.putInt("nowScrollWebView", nowScrollWebView)
     }
 
@@ -67,7 +70,8 @@ class Fragment_Novel : StatedFragment() {
         loadNovel(nowWebNovel)
 
         nowScrollWebView= savedInstanceState!!.getInt("nowScrollWebView")
-        wv_Novel.scrollY=nowScrollWebView
+        //wv_Novel.scrollY=nowScrollWebView
+        //mScrollView.scrollTo(0,nowScrollWebView)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -101,7 +105,37 @@ class Fragment_Novel : StatedFragment() {
     ): View? {
         Log.d("watch", "onCreateView Novel")
         // Inflate the layout for this fragment
+
         var view: View = inflater.inflate(R.layout.fragment__novel, container, false)
+        ComeBackView = view
+        loadingView = LayoutInflater.from(this.context).inflate(R.layout.loading_layout, view as ViewGroup, false)
+        var tv_Novel :TextView = view.findViewById(R.id.tv_Novel)
+        tv_Novel.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                if(tv_Novel.text!="") removeLoadingView()
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+        })
+        tv_Novel.setOnLongClickListener {
+            var intentGetDialog = Intent(context, Activity_PageDialog::class.java)
+            var bundle = Bundle()
+            bundle.putInt("nextPageValue", nextPageValue)
+            bundle.putInt("prevPageValue", prevPageValue)
+            bundle.putInt("nowPageValue", nowPageValue)
+            bundle.putInt("totalPageValue", TotalPageValue)
+            bundle.putInt("PageDialogType", Global.TYPE_NOVEL)
+
+            intentGetDialog.putExtras(bundle)
+            intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
+            //(mContext as Activity).startActivityForResult(intentGetDialog, 1)
+            (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
+            true
+        }
         var mWebView : WebView = view.findViewById(R.id.wv_Novel)
         mWebView.setOnLongClickListener {
             var intentGetDialog = Intent(context, Activity_PageDialog::class.java)
@@ -117,6 +151,12 @@ class Fragment_Novel : StatedFragment() {
             //(mContext as Activity).startActivityForResult(intentGetDialog, 1)
             (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
             true
+        }
+
+        var btn_testScroll : Button = view.findViewById(R.id.btn_testScroll)
+        btn_testScroll.setOnClickListener {
+            var mScrollView : ScrollView = view.findViewById(R.id.mScrollView)
+            mScrollView.scrollTo(0,nowScrollWebView)
         }
         reloadSetting(view)
         return view
@@ -149,6 +189,7 @@ class Fragment_Novel : StatedFragment() {
     }
 
     fun watchNovelStart() {
+        addLoadingView()
         Log.d("watch", "watchNovelStart Novel")
         val b = getArguments()
         nowHtml = b?.getString("novelLink")!!
@@ -171,20 +212,32 @@ class Fragment_Novel : StatedFragment() {
         var mBackColor_G = sharePreferenceProfile_Local.getInt("BackColor_Green", 0)
         var mBackColor_B = sharePreferenceProfile_Local.getInt("BackColor_Blue", 0)
         //套用設定
+        //==
+        var tv_Novel=view.findViewById<TextView>(R.id.tv_Novel)
+        tv_Novel.textSize=mfontSize.toFloat()
+        tv_Novel.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
+        tv_Novel.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
+        //==
         var editText_nowHtml=view.findViewById<EditText>(R.id.editText_nowHtml)
         editText_nowHtml.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
         editText_nowHtml.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-        var wv_Novel=view.findViewById<WebView>(R.id.wv_Novel)
-        //wv_Novel.setBackgroundColor(Color.rgb(mBackColor_R,mBackColor_G,mBackColor_B))
-        var mWebSettings=wv_Novel.settings
-        //mWebSettings.textZoom=150
-        fontColor=Color.rgb(mfontColor_R,mfontColor_G,mfontColor_B)
-        mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-        mWebSettings.setBlockNetworkImage(true);
-        mWebSettings.setLoadsImagesAutomatically(true);
-        mWebSettings.setGeolocationEnabled(false);
-        mWebSettings.setNeedInitialFocus(false);
-        mWebSettings.setDefaultFontSize(mfontSize);
+//        var wv_Novel=view.findViewById<WebView>(R.id.wv_Novel)
+//        //wv_Novel.setBackgroundColor(Color.rgb(mBackColor_R,mBackColor_G,mBackColor_B))
+//        var mWebSettings=wv_Novel.settings
+//        //mWebSettings.textZoom=150
+//        var fontColorGB=Color.rgb(mfontColor_R,mfontColor_G,mfontColor_B)
+//        fontColor=String.format("#%06X", 0xFFFFFF and fontColorGB)
+//        mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+//        mWebSettings.setBlockNetworkImage(true);
+//        //mWebSettings.setLoadsImagesAutomatically(true);
+//        //mWebSettings.setGeolocationEnabled(false);
+//        //mWebSettings.setNeedInitialFocus(false);
+//        mWebSettings.setDefaultFontSize(mfontSize);
+////        mWebSettings.setDomStorageEnabled(true)
+////        mWebSettings.setAppCacheEnabled(false);
+//        //mWebSettings.setUseWideViewPort(true);
+//        //mWebSettings.setLoadWithOverviewMode(true);
+
     }
 
     fun handleHtmlWeb(m_string: String) {
@@ -213,15 +266,30 @@ class Fragment_Novel : StatedFragment() {
                     if (select_content.size > 0) {
                         val head_content = doclocal.select("head")
                         var body_content = doclocal.select("body")
-                        //var font_content = doclocal.select("font").first()
+                        var font_content = body_content.select("font")
+                        //==
+//                        font_content.attr("color",fontColor)
+//                        font_content.first().text("")
+//                        for (i in 0 until select_content.size) {
+//                            font_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
+//                        }
+                        //==
                         body_content.first().text("")
+                        //body_content.append("<font color=\""+fontColor+"\"></font>")
                         for (i in 0 until select_content.size) {
                             body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
+                           //body_content.select("font").append(select_content[i].html().replace(" ", "") + "<br><br>")
                         }
+
                         body_content.add(0, head_content.first())
                         body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
                         activity!!.runOnUiThread {
-                            nowWebNovel = body_content.html()
+                            nowWebNovel = body_content.toString()
+//                            var AAA=nowWebNovel.indexOf("<body>")+6
+//                            nowWebNovel=nowWebNovel.substring(0,AAA)+"<font color=\"#FF0000\">"+nowWebNovel.substring(AAA,nowWebNovel.length)
+//                            var BBB = nowWebNovel.indexOf("</body>")
+//                            nowWebNovel=nowWebNovel.substring(0,BBB)+"</font>"+nowWebNovel.substring(BBB,nowWebNovel.length)
+                            //nowWebNovel = body_content.html()
                             loadNovel(nowWebNovel)
                         }
                     }
@@ -265,11 +333,17 @@ class Fragment_Novel : StatedFragment() {
 
     fun loadNovel(mstring: String) {
         Log.d("watch", "loadNovel Novel")
-        wv_Novel.loadDataWithBaseURL("", mstring, "text/html", "UTF-8", "");
+        //wv_Novel.loadDataWithBaseURL("", mstring, "text/html", "UTF-8", "");
+
+        tv_Novel.text=""
+        addLoadingView()
+        mScrollView.smoothScrollTo(0,0)
+        tv_Novel.setText(Html.fromHtml(mstring))
     }
 
     fun pageJump(m_nowPageHtml: String, nowPage: Int) {
         Log.d("watch", "pageJump Novel")
+
         nowPageValue = nowPage
         prevPageValue = nowPage - 1
         nextPageValue = nowPage + 1
@@ -284,6 +358,7 @@ class Fragment_Novel : StatedFragment() {
             jumpingPage = cutAgain.substring(0, cutStart + 1) + nowPageValue.toString() + "-1.html"
             nowHtml = jumpingPage
             activity!!.runOnUiThread {
+                addLoadingView()
                 Log.d("watch", "check Skip H")
                 editText_nowHtml.setText(nowHtml)
             }
@@ -292,6 +367,7 @@ class Fragment_Novel : StatedFragment() {
             jumpingPage = m_nowPageHtml.substring(0, cutStart + 1) + nowPageValue.toString()
             nowHtml = jumpingPage
             activity!!.runOnUiThread {
+                addLoadingView()
                 Log.d("watch", "check Skip I")
                 editText_nowHtml.setText(nowHtml)
             }
@@ -345,5 +421,13 @@ class Fragment_Novel : StatedFragment() {
                 Toast.makeText(this.context, "已加入書籤", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+    private fun addLoadingView() {
+        var iv_Loading = view?.findViewById<ImageView>(R.id.iv_Loading)
+        iv_Loading?.visibility = View.VISIBLE
+    }
+    private fun removeLoadingView(){
+        var iv_Loading = view?.findViewById<ImageView>(R.id.iv_Loading)
+        iv_Loading?.visibility = View.GONE
     }
 }

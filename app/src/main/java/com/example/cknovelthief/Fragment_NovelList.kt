@@ -1,6 +1,7 @@
 package com.example.cknovelthief
 
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -188,6 +189,7 @@ class Fragment_NovelList : StatedFragment() {
             var mDivider = DividerItemDecoration(this.context!!, DividerItemDecoration.VERTICAL)
             rv_novelListRecycleView.addItemDecoration(mDivider)
             editText_nowHtml.setText(nowPageHtml)
+            removeLoadingView()
         }
     }
 
@@ -309,6 +311,10 @@ class Fragment_NovelList : StatedFragment() {
     }
 
     fun pageJump(m_nowPageHtml: String, nowPage: Int) {
+        getActivity()!!.runOnUiThread {
+            addLoadingView()
+        }
+
         Log.d("watch", "pageJump Novelist")
         nowPageValue = nowPage
         prevPageValue = nowPage - 1
@@ -375,6 +381,7 @@ class Fragment_NovelList : StatedFragment() {
     }
 
     fun startGetNovelList() {
+        addLoadingView()
         Thread {
             Runnable {
                 GetHtmlData(nowPageHtml) {
@@ -383,9 +390,20 @@ class Fragment_NovelList : StatedFragment() {
                         //連結recycleView
                         var mNovelDataLink = NovelDataLink()
                         recycleViewBinding(mNovelDataLink.getList(mNovelsData))
+                        getActivity()!!.runOnUiThread{
+                            removeLoadingView()
+                        }
                     }
                 }
             }.run()
         }.start()
+    }
+    private fun addLoadingView() {
+        var iv_Loading = view?.findViewById<ImageView>(R.id.iv_ListLoading)
+        iv_Loading?.visibility = View.VISIBLE
+    }
+    private fun removeLoadingView(){
+        var iv_Loading = view?.findViewById<ImageView>(R.id.iv_ListLoading)
+        iv_Loading?.visibility = View.GONE
     }
 }
