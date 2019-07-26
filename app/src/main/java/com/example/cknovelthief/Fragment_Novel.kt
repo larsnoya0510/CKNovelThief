@@ -237,6 +237,7 @@ class Fragment_Novel : StatedFragment() {
 ////        mWebSettings.setAppCacheEnabled(false);
 //        //mWebSettings.setUseWideViewPort(true);
 //        //mWebSettings.setLoadWithOverviewMode(true);
+
     }
 
     fun handleHtmlWeb(m_string: String) {
