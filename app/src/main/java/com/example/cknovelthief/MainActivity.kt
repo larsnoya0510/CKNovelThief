@@ -3,11 +3,9 @@ package com.example.cknovelthief
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.view.PagerAdapter
 import android.support.v4.view.ViewPager
 import com.example.cknovelthief.ViewPagerAdapter.TabLayout_ViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,13 +14,13 @@ import android.widget.Toast
 import okhttp3.*
 import java.io.IOException
 
-
 class MainActivity : AppCompatActivity() {
     private lateinit var loadingView: View
     private var networkStateTest = false
+    private var targetHtml="https://ck101.com/forum-237-1.html"
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("AAAA", "onCreate")
+        //Log.d("CheckState", "onCreate")
         setContentView(R.layout.activity_main)
         initUniTest()//功能測試
         initView()
@@ -56,17 +54,13 @@ class MainActivity : AppCompatActivity() {
         mPageTitleList.add(getResources().getString(R.string.setting))
         var mViewPagerAdapter = TabLayout_ViewPagerAdapter(mPageTitleList, m_FragmemtManager)
         vp_This.adapter = mViewPagerAdapter
-        //vp_This.offscreenPageLimit=3
+        //vp_This.offscreenPageLimit=3 //保存fragment記憶體
         tl_This.setupWithViewPager(vp_This)
         vp_This.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
             override fun onPageScrollStateChanged(p0: Int) {
-
             }
-
             override fun onPageScrolled(p0: Int, p1: Float, p2: Int) {
-
             }
-
             override fun onPageSelected(p0: Int) {
                 if(p0==2){
                     var fm = supportFragmentManager
@@ -77,7 +71,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
         })
     }
 
@@ -92,7 +85,7 @@ class MainActivity : AppCompatActivity() {
         //var Result : Boolean
         val client = OkHttpClient().newBuilder().build()
         val request = Request.Builder()
-            .url("https://ck101.com/forum-237-1.html")
+            .url(targetHtml)
             .build()
 
         // 建立Call

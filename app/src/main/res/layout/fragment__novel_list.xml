@@ -3,7 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context=".Fragment_NovelList">
+             tools:context=".Fragment_NovelList" android:id="@+id/fl_fragment_NovelList">
 
     <LinearLayout
             xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,11 +15,10 @@
             android:id="@+id/llayout_main">
 
         <EditText
-                android:text="TextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:id="@+id/editText_nowHtml"
                 android:inputType="textWebEditText" android:ems="10" android:textColor="@color/colorWhite"
-                android:enabled="false" android:editable="true" android:focusableInTouchMode="false"/>
+                android:enabled="false" android:editable="false" android:focusableInTouchMode="false"/>
         <android.support.v7.widget.RecyclerView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" android:id="@+id/rv_novelListRecycleView">

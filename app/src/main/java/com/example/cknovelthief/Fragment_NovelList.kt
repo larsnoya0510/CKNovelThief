@@ -1,7 +1,5 @@
 package com.example.cknovelthief
 
-
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -21,7 +19,6 @@ import com.example.cknovelthief.DataClass.NovelDataLink
 import com.example.cknovelthief.DataClass.NovelsDataSet
 import com.example.cknovelthief.Model.StatedFragment
 import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment__novel_list.*
 import org.jsoup.Jsoup
 import java.net.URL
 
@@ -30,7 +27,7 @@ class Fragment_NovelList : StatedFragment() {
     lateinit var editText_nowHtml: EditText
     lateinit var llayout_main: LinearLayout
     lateinit var rv_novelListRecycleView: RecyclerView
-    var textSize=0F
+    var textSize = 0F
 
     companion object {
         val homePageHtml = "https://ck101.com/forum-237-1.html"
@@ -43,47 +40,38 @@ class Fragment_NovelList : StatedFragment() {
 
     override fun onSaveState(outState: Bundle) {
         super.onSaveState(outState)
-        Log.d("watch", "onSaveState Novelist")
-        // For example:
-        //outState.putString(text, tvSample.getText().toString());
-        Log.d("watch", " onSaveState NovelListData start")
+//        Log.d("CheckState", "onSaveState Novelist")
         outState.putSerializable("NovelListData", mNovelsData)
-        Log.d("watch", " onSaveState NovelListData end")
     }
 
     override fun onRestoreState(savedInstanceState: Bundle?) {
         super.onRestoreState(savedInstanceState)
-        Log.d("watch", "onRestoreState Novelist")
+//        Log.d("CheckState", "onRestoreState Novelist")
         var mNovelDataLink = NovelDataLink()
         mNovelsData = savedInstanceState?.getSerializable("NovelListData") as NovelsDataSet
         recycleViewBinding(mNovelDataLink.getList(mNovelsData))
     }
 
     override fun onFirstTimeLaunched() {
-        Log.d("watch", "onFirstTimeLaunched Novelist")
-
-
+//        Log.d("CheckState", "onFirstTimeLaunched Novelist")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         nowPageHtml = homePageHtml
-        Log.d("watch", "onCreate Novelist")
+        Log.d("CheckState", "onCreate Novelist")
     }
 
     override fun onStart() {
         super.onStart()
-        Log.d("watch", "onStart Novelist")
-
-
+//        Log.d("CheckState", "onStart Novelist")
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("watch", "onCreateView Novelist")
-        //return inflater.inflate(R.layout.fragment__novel_list, container, false)
+//        Log.d("CheckState", "onCreateView Novelist")
         var view: View = inflater.inflate(R.layout.fragment__novel_list, container, false)
         initView(view)
         reloadSetting(view)
@@ -92,11 +80,11 @@ class Fragment_NovelList : StatedFragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        Log.d("watch", "onAttach Novelist")
+//        Log.d("CheckState", "onAttach Novelist")
     }
 
     fun reloadSetting(view: View) {
-        Log.d("watch", "reloadSetting Novelist")
+//        Log.d("CheckState", "reloadSetting Novelist")
         getActivity()!!.runOnUiThread {
             var sharePreferenceProfile_Local =
                 this.getActivity()!!.getSharedPreferences("LocalProfileSetting", Context.MODE_PRIVATE)
@@ -112,7 +100,7 @@ class Fragment_NovelList : StatedFragment() {
             editText_nowHtml.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
             llayout_main.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
             rv_novelListRecycleView.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-            textSize=mfontSize.toFloat()
+            textSize = mfontSize.toFloat()
         }
     }
 
@@ -124,13 +112,13 @@ class Fragment_NovelList : StatedFragment() {
     }
 
     fun GetHtmlData(urlString: String, callback: () -> Unit) {
-        Log.d("watch", "GetHtmlData Novelist")
+//        Log.d("CheckState", "GetHtmlData Novelist")
         nowPageHtml = urlString
         mNovelsData.AllClear()
         var url: URL = URL(urlString)
         //jsoup連線方式改為不限制buffer容量以及加長timeout時間避免資料被截斷
         var response = Jsoup.connect(url.toString()).followRedirects(false).execute()
-        Log.d("watch", "GetHtmlData Novelist response " + response)
+//        Log.d("CheckState", "GetHtmlData Novelist response " + response)
         if (response.statusCode() == 200) {
             val doc = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).get()
             val novelList = doc.select("tbody[id^=normalthread]")
@@ -176,12 +164,11 @@ class Fragment_NovelList : StatedFragment() {
                 Toast.makeText(this.context, "網路異常 請確認網路環境", Toast.LENGTH_SHORT).show()
             }
         }
-
         callback.invoke()
     }
 
     fun recycleViewBinding(mNovelDataLinkList: MutableList<NovelDataLink>) {
-        Log.d("watch", "recycleViewBinding Novelist")
+        Log.d("CheckState", "recycleViewBinding Novelist")
         getActivity()!!.runOnUiThread {
             val adapter = novelRecycleViewAdaper(this.context!!, mNovelDataLinkList, textSize)
             rv_novelListRecycleView.adapter = adapter
@@ -219,25 +206,17 @@ class Fragment_NovelList : StatedFragment() {
                 Glide.with(this.context).load(novelList[position].icon).into(holder.iv_icon)
             }
             vh.tv_name.text = novelList[position].name
-            vh.tv_name.textSize=textSize
+            vh.tv_name.textSize = textSize
             vh.tv_desc.text = novelList[position].link
             vh.ll_item.setOnClickListener {
                 //開啟小說頁面
-//                var intentNovelLink = Intent(this.context, Activity_NovelShow::class.java)
-//                intentNovelLink.putExtra("novelLink", novelList[position].link)
-//                intentNovelLink.putExtra("noveltitle", novelList[position].name)
-//                this.context.startActivity(intentNovelLink)
-                Log.d("watch", "start Jump to FragmentNovel")
+//                Log.d("CheckState", "start Jump to FragmentNovel")
                 var fm = (this.context as MainActivity).supportFragmentManager
                 var m_bundle = Bundle()
                 m_bundle.putString("novelLink", novelList[position].link)
                 m_bundle.putString("noveltitle", novelList[position].name)
-//                fm.fragments[1].arguments = m_bundle
-//                Log.d("watch", "start watchNovelStart")
-//                (fm.fragments[1] as Fragment_Novel).watchNovelStart()
-//                (this.context as MainActivity).vp_This.setCurrentItem(1)
-                for(i in 0 until fm.fragments.size){
-                    if(fm.fragments[i] is Fragment_Novel){
+                for (i in 0 until fm.fragments.size) {
+                    if (fm.fragments[i] is Fragment_Novel) {
                         fm.fragments[i].arguments = m_bundle
                         (fm.fragments[i] as Fragment_Novel).watchNovelStart()
                         (this.context as MainActivity).vp_This.setCurrentItem(1)
@@ -256,7 +235,6 @@ class Fragment_NovelList : StatedFragment() {
 
                 intentGetDialog.putExtras(bundle)
                 intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-                //(mContext as Activity).startActivityForResult(intentGetDialog, 1)
                 (mContext as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
                 true
             }
@@ -315,7 +293,7 @@ class Fragment_NovelList : StatedFragment() {
             addLoadingView()
         }
 
-        Log.d("watch", "pageJump Novelist")
+//        Log.d("CheckState", "pageJump Novelist")
         nowPageValue = nowPage
         prevPageValue = nowPage - 1
         nextPageValue = nowPage + 1
@@ -338,18 +316,18 @@ class Fragment_NovelList : StatedFragment() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("watch", "onActivityResult Novelist")
-        Log.d("watch", "A requestCode: " + requestCode + " resultCode: " + resultCode)
+//        Log.d("CheckState", "onActivityResult Novelist")
+//        Log.d("CheckState", "A requestCode: " + requestCode + " resultCode: " + resultCode)
         if (requestCode == Global.CALL_PAGE_DIALOG) {
             if (resultCode == Global.LIST_RESULT_NEXT) {
-                Log.d("watch", "PAGE_RESULT_NEXT")
+//                Log.d("CheckState", "PAGE_RESULT_NEXT")
                 Thread {
                     Runnable {
                         pageJump(nowPageHtml, nextPageValue)
                     }.run()
                 }.start()
             } else if (resultCode == Global.LIST_RESULT_PREV) {
-                Log.d("watch", "PAGE_RESULT_PREV")
+//                Log.d("CheckState", "PAGE_RESULT_PREV")
                 Thread {
                     Runnable {
                         pageJump(nowPageHtml, prevPageValue)
@@ -366,12 +344,9 @@ class Fragment_NovelList : StatedFragment() {
                 } else {
                     Toast.makeText(this.context, "JumpError", Toast.LENGTH_SHORT).show()
                 }
-//            } else if (resultCode == Global.PAGE_BOOKMARK) {
-//
             } else if (resultCode == Global.SETTING) {
                 if (data != null) {
                     reloadSetting(this.view!!)
-//                recycleViewBinding()
                     //連結recycleView
                     var mNovelDataLink = NovelDataLink()
                     recycleViewBinding(mNovelDataLink.getList(mNovelsData))
@@ -379,18 +354,18 @@ class Fragment_NovelList : StatedFragment() {
             }
         }
     }
-
+    //由其他地方呼叫
     fun startGetNovelList() {
         addLoadingView()
         Thread {
             Runnable {
                 GetHtmlData(nowPageHtml) {
-                    Log.d("watch", "go GetHtmlData Novelist")
+//                    Log.d("CheckState", "go GetHtmlData Novelist")
                     if (mNovelsData.iconArray.size > 0) {
                         //連結recycleView
                         var mNovelDataLink = NovelDataLink()
                         recycleViewBinding(mNovelDataLink.getList(mNovelsData))
-                        getActivity()!!.runOnUiThread{
+                        getActivity()!!.runOnUiThread {
                             removeLoadingView()
                         }
                     }
@@ -398,11 +373,13 @@ class Fragment_NovelList : StatedFragment() {
             }.run()
         }.start()
     }
+
     private fun addLoadingView() {
         var iv_Loading = view?.findViewById<ImageView>(R.id.iv_ListLoading)
         iv_Loading?.visibility = View.VISIBLE
     }
-    private fun removeLoadingView(){
+
+    private fun removeLoadingView() {
         var iv_Loading = view?.findViewById<ImageView>(R.id.iv_ListLoading)
         iv_Loading?.visibility = View.GONE
     }

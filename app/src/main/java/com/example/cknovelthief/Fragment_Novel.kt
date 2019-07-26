@@ -48,77 +48,88 @@ class Fragment_Novel : StatedFragment() {
         var nowTitle: String = ""
         var nowWebNovel : String =""
         var nowNovelSets = mutableListOf<String>()
-        var recylerViewState: Parcelable? = null
         var nowScrollWebView =0
-        //var fontColor  = Color.rgb(0,0,0)
-        var fontColor = ""
+        var loadingFlag=true
     }
     override fun onSaveState(outState: Bundle) {
         super.onSaveState(outState)
-        Log.d("watch", "onSaveState Novel")
+//        Log.d("CheckState", "onSaveState Novel")
         outState.putString("nowWebNovel", nowWebNovel)
-        //nowScrollWebView=wv_Novel.scrollY
         nowScrollWebView=mScrollView.scrollY
         outState.putInt("nowScrollWebView", nowScrollWebView)
     }
 
     override fun onRestoreState(savedInstanceState: Bundle?) {
         super.onRestoreState(savedInstanceState)
-        Log.d("watch", "onRestoreState Novel")
+        Log.d("CheckState", "onRestoreState Novel")
 
         nowWebNovel= savedInstanceState!!.getString("nowWebNovel")
-        loadNovel(nowWebNovel)
+        if(nowWebNovel!="") loadNovel(nowWebNovel)
 
         nowScrollWebView= savedInstanceState!!.getInt("nowScrollWebView")
         //wv_Novel.scrollY=nowScrollWebView
         //mScrollView.scrollTo(0,nowScrollWebView)
     }
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        Log.d("CheckState", "onAttach Novel")
+    }
+    override fun onDetach() {
+        super.onDetach()
+        Log.d("CheckState", "onDetach Novel")
+    }
+    override fun onStart() {
+        super.onStart()
+        Log.d("CheckState", "onStart Novel")
 
+    }
+    override fun onResume() {
+        super.onResume()
+        Log.d("CheckState", "onResume Novel")
+    }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        Log.d("CheckState", "onActivityCreated Novel")
+    }
+    override fun onFirstTimeLaunched() {
+        Log.d("CheckState", "onFirstTimeLaunched Novel")
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("watch", "onCreate Novel")
+        Log.d("CheckState", "onCreate Novel")
     }
-
     override fun onDestroyView() {
         super.onDestroyView()
-        Log.d("watch", "onDestroyView Novel")
+        Log.d("CheckState", "onDestroyView Novel")
     }
-
     override fun onStop() {
         super.onStop()
-        Log.d("watch", "onStop Novel")
+        Log.d("CheckState", "onStop Novel")
     }
-
     override fun onPause() {
         super.onPause()
-        Log.d("watch", "onPause Novel")
+        Log.d("CheckState", "onPause Novel")
     }
-
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("watch", "onDestroy Novel")
+        Log.d("CheckState", "onDestroy Novel")
     }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("watch", "onCreateView Novel")
-        // Inflate the layout for this fragment
-
+//        Log.d("CheckState", "onCreateView Novel")
         var view: View = inflater.inflate(R.layout.fragment__novel, container, false)
         ComeBackView = view
         loadingView = LayoutInflater.from(this.context).inflate(R.layout.loading_layout, view as ViewGroup, false)
         var tv_Novel :TextView = view.findViewById(R.id.tv_Novel)
         tv_Novel.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
-                if(tv_Novel.text!="") removeLoadingView()
+                if(loadingFlag==false && tv_Novel.text!="") removeLoadingView()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
             }
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
             }
         })
         tv_Novel.setOnLongClickListener {
@@ -132,76 +143,26 @@ class Fragment_Novel : StatedFragment() {
 
             intentGetDialog.putExtras(bundle)
             intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-            //(mContext as Activity).startActivityForResult(intentGetDialog, 1)
             (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
             true
-        }
-        var mWebView : WebView = view.findViewById(R.id.wv_Novel)
-        mWebView.setOnLongClickListener {
-            var intentGetDialog = Intent(context, Activity_PageDialog::class.java)
-            var bundle = Bundle()
-            bundle.putInt("nextPageValue", nextPageValue)
-            bundle.putInt("prevPageValue", prevPageValue)
-            bundle.putInt("nowPageValue", nowPageValue)
-            bundle.putInt("totalPageValue", TotalPageValue)
-            bundle.putInt("PageDialogType", Global.TYPE_NOVEL)
-
-            intentGetDialog.putExtras(bundle)
-            intentGetDialog.setFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT)
-            //(mContext as Activity).startActivityForResult(intentGetDialog, 1)
-            (context as MainActivity).startActivityForResult(intentGetDialog, Global.CALL_PAGE_DIALOG)
-            true
-        }
-
-        var btn_testScroll : Button = view.findViewById(R.id.btn_testScroll)
-        btn_testScroll.setOnClickListener {
-            var mScrollView : ScrollView = view.findViewById(R.id.mScrollView)
-            mScrollView.scrollTo(0,nowScrollWebView)
         }
         reloadSetting(view)
         return view
     }
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Log.d("watch", "onAttach Novel")
-
-    }
-    override fun onDetach() {
-        super.onDetach()
-        Log.d("watch", "onDetach Novel")
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("watch", "onStart Novel")
-
-    }
-    override fun onResume() {
-        super.onResume()
-        Log.d("watch", "onResume Novel")
-    }
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        Log.d("watch", "onActivityCreated Novel")
-    }
-    override fun onFirstTimeLaunched() {
-        Log.d("watch", "onFirstTimeLaunched Novel")
-    }
 
     fun watchNovelStart() {
         addLoadingView()
-        Log.d("watch", "watchNovelStart Novel")
-        val b = getArguments()
-        nowHtml = b?.getString("novelLink")!!
-        nowTitle = b?.getString("noveltitle")
+//        Log.d("CheckState", "watchNovelStart Novel")
+        val getbundle = getArguments()
+        nowHtml = getbundle?.getString("novelLink")!!
+        nowTitle = getbundle?.getString("noveltitle")
         editText_nowHtml.setText(nowHtml)
         handleHtmlWeb(nowHtml)
-        //recycleViewBinding(nowNovelSets)
     }
 
     fun reloadSetting(view :View) {
         //runOnUiThread {
-        Log.d("watch", "reloadSetting Novel")
+        Log.d("CheckState", "reloadSetting Novel")
         var sharePreferenceProfile_Local =
             this.getActivity()!!.getSharedPreferences("LocalProfileSetting", Context.MODE_PRIVATE)
         var mfontSize = sharePreferenceProfile_Local.getInt("NovelFontSize", 0)
@@ -221,38 +182,17 @@ class Fragment_Novel : StatedFragment() {
         var editText_nowHtml=view.findViewById<EditText>(R.id.editText_nowHtml)
         editText_nowHtml.setTextColor(Color.rgb(mfontColor_R, mfontColor_G, mfontColor_B))
         editText_nowHtml.setBackgroundColor(Color.rgb(mBackColor_R, mBackColor_G, mBackColor_B))
-//        var wv_Novel=view.findViewById<WebView>(R.id.wv_Novel)
-//        //wv_Novel.setBackgroundColor(Color.rgb(mBackColor_R,mBackColor_G,mBackColor_B))
-//        var mWebSettings=wv_Novel.settings
-//        //mWebSettings.textZoom=150
-//        var fontColorGB=Color.rgb(mfontColor_R,mfontColor_G,mfontColor_B)
-//        fontColor=String.format("#%06X", 0xFFFFFF and fontColorGB)
-//        mWebSettings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-//        mWebSettings.setBlockNetworkImage(true);
-//        //mWebSettings.setLoadsImagesAutomatically(true);
-//        //mWebSettings.setGeolocationEnabled(false);
-//        //mWebSettings.setNeedInitialFocus(false);
-//        mWebSettings.setDefaultFontSize(mfontSize);
-////        mWebSettings.setDomStorageEnabled(true)
-////        mWebSettings.setAppCacheEnabled(false);
-//        //mWebSettings.setUseWideViewPort(true);
-//        //mWebSettings.setLoadWithOverviewMode(true);
-
     }
 
     fun handleHtmlWeb(m_string: String) {
-        Log.d("watch", "handleHtmlWeb Novel")
+//        Log.d("CheckState", "handleHtmlWeb Novel")
         Thread {
             Runnable {
                 nowNovelSets.clear()
-                Log.d("watch", "handleHtmlWeb")
+//                Log.d("CheckState", "handleHtmlWeb")
                 var url: URL = URL(m_string)
                 var response = Jsoup.connect(url.toString()).followRedirects(true).execute()
-                val response2 = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).get()
-                //var response = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).followRedirects(false).execute()
-                //var  response  =Jsoup.connect(m_string).timeout(60000).maxBodySize(0).followRedirects(false).execute()
                 if(response.statusCode()== 200) {
-                    //val doc = Jsoup.connect(m_string).timeout(60000).maxBodySize(0).get()
                     val doc = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).get()
                     val select_content = doc.select("body").select("td[class=t_f]")
                     val selectPage_content = doc.select("body").select("div[class=pg]").first().select("a[href],strong")
@@ -260,42 +200,23 @@ class Fragment_Novel : StatedFragment() {
                         doc.select("body").select("div[class=pg]").first().select("strong")
                     val abpath = javaClass.getResourceAsStream("/assets/web/local.html")
                     var doclocal = Jsoup.parse(abpath, "UTF-8", "http://example.com/")
-
                     //Runnable {
-                    Log.d("watch", "check Skip A")
+                    Log.d("CheckState", "check Skip A")
                     if (select_content.size > 0) {
                         val head_content = doclocal.select("head")
                         var body_content = doclocal.select("body")
-                        var font_content = body_content.select("font")
-                        //==
-//                        font_content.attr("color",fontColor)
-//                        font_content.first().text("")
-//                        for (i in 0 until select_content.size) {
-//                            font_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
-//                        }
-                        //==
                         body_content.first().text("")
-                        //body_content.append("<font color=\""+fontColor+"\"></font>")
                         for (i in 0 until select_content.size) {
                             body_content.append(select_content[i].html().replace(" ", "") + "<br><br>")
-                           //body_content.select("font").append(select_content[i].html().replace(" ", "") + "<br><br>")
                         }
-
                         body_content.add(0, head_content.first())
                         body_content.wrap("<html xmlns=\"http://www.w3.org/1999/xhtml\"></html>")
                         activity!!.runOnUiThread {
                             nowWebNovel = body_content.toString()
-//                            var AAA=nowWebNovel.indexOf("<body>")+6
-//                            nowWebNovel=nowWebNovel.substring(0,AAA)+"<font color=\"#FF0000\">"+nowWebNovel.substring(AAA,nowWebNovel.length)
-//                            var BBB = nowWebNovel.indexOf("</body>")
-//                            nowWebNovel=nowWebNovel.substring(0,BBB)+"</font>"+nowWebNovel.substring(BBB,nowWebNovel.length)
-                            //nowWebNovel = body_content.html()
                             loadNovel(nowWebNovel)
                         }
                     }
-                    Log.d("watch", "check Skip D")
                     if (selectPage_content.size > 0) {
-                        Log.d("watch", "check Skip E")
                         var psize = selectPage_content.size
                         if (selectPage_content[psize - 1].text() != "下一頁") {
                             TotalPageValue = selectPage_content[psize - 1].text().toInt()
@@ -305,7 +226,6 @@ class Fragment_Novel : StatedFragment() {
                         }
                     }
                     if (selectPage_content_content_NowPage.size > 0) {
-                        Log.d("watch", "check Skip F")
                         nowPageValue = selectPage_content_content_NowPage[0].text().toInt()
 
                         if (nowPageValue + 1 <= TotalPageValue) {
@@ -319,7 +239,6 @@ class Fragment_Novel : StatedFragment() {
                             prevPageValue = nowPageValue
                         }
                     } else {
-                        Log.d("watch", "check Skip G")
                     }
                 }
                 else{
@@ -332,25 +251,22 @@ class Fragment_Novel : StatedFragment() {
     }
 
     fun loadNovel(mstring: String) {
-        Log.d("watch", "loadNovel Novel")
-        //wv_Novel.loadDataWithBaseURL("", mstring, "text/html", "UTF-8", "");
-
+//        Log.d("CheckState", "loadNovel Novel")
+        loadingFlag=false
         tv_Novel.text=""
         addLoadingView()
         mScrollView.smoothScrollTo(0,0)
         tv_Novel.setText(Html.fromHtml(mstring))
+
     }
 
     fun pageJump(m_nowPageHtml: String, nowPage: Int) {
-        Log.d("watch", "pageJump Novel")
-
+//        Log.d("CheckState", "pageJump Novel")
         nowPageValue = nowPage
         prevPageValue = nowPage - 1
         nextPageValue = nowPage + 1
-
         var jumpingPage: String = ""
 
-        //Runnable {
         if (m_nowPageHtml.contains("thread")) {
             var cutStart: Int = m_nowPageHtml.lastIndexOf("-")
             var cutAgain = m_nowPageHtml.substring(0, cutStart)
@@ -359,7 +275,7 @@ class Fragment_Novel : StatedFragment() {
             nowHtml = jumpingPage
             activity!!.runOnUiThread {
                 addLoadingView()
-                Log.d("watch", "check Skip H")
+//                Log.d("CheckState", "check Skip H")
                 editText_nowHtml.setText(nowHtml)
             }
         } else if (m_nowPageHtml.contains("mod=viewthread")) {
@@ -368,21 +284,16 @@ class Fragment_Novel : StatedFragment() {
             nowHtml = jumpingPage
             activity!!.runOnUiThread {
                 addLoadingView()
-                Log.d("watch", "check Skip I")
                 editText_nowHtml.setText(nowHtml)
             }
         }
-//        Thread {
-        Log.d("watch", "check Skip J")
         handleHtmlWeb(jumpingPage)
-//        }.start()
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        Log.d("watch", "onActivityResult Novel")
-        Log.d("watch", "B requestCode: " + requestCode + " resultCode: " + resultCode)
+//        Log.d("CheckState", "onActivityResult Novel")
+//        Log.d("CheckState", "B requestCode: " + requestCode + " resultCode: " + resultCode)
         if (requestCode == Global.CALL_PAGE_DIALOG) {
             if (resultCode == Global.PAGE_RESULT_NEXT) {
                 Thread {
@@ -398,12 +309,10 @@ class Fragment_Novel : StatedFragment() {
                     }.run()
                 }.start()
             } else if (resultCode == Global.PAGE_RESULT_TARGET) {
-                //Log.d("Info", "now Targetjump")
                 if (data != null) {
                     nowPageValue = data.getIntExtra("JumpPage", 0)
                     Thread {
                         Runnable {
-                            //Log.d("Info", "start Targetjump" + nowHtml + "value " + nowPageValue)
                             pageJump(nowHtml, nowPageValue)
                         }.run()
                     }.start()
@@ -425,9 +334,11 @@ class Fragment_Novel : StatedFragment() {
     private fun addLoadingView() {
         var iv_Loading = view?.findViewById<ImageView>(R.id.iv_Loading)
         iv_Loading?.visibility = View.VISIBLE
+
     }
     private fun removeLoadingView(){
         var iv_Loading = view?.findViewById<ImageView>(R.id.iv_Loading)
         iv_Loading?.visibility = View.GONE
+        loadingFlag=false
     }
 }
