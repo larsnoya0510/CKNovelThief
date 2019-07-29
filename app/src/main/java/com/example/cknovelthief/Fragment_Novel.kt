@@ -58,7 +58,6 @@ class Fragment_Novel : StatedFragment() {
         nowScrollWebView=mScrollView.scrollY
         outState.putInt("nowScrollWebView", nowScrollWebView)
     }
-
     override fun onRestoreState(savedInstanceState: Bundle?) {
         super.onRestoreState(savedInstanceState)
         Log.d("CheckState", "onRestoreState Novel")

@@ -21,6 +21,7 @@ import com.example.cknovelthief.Model.StatedFragment
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jsoup.Jsoup
 import java.net.URL
+import java.net.URLEncoder
 
 class Fragment_NovelList : StatedFragment() {
     var mNovelsData = NovelsDataSet()
@@ -46,7 +47,7 @@ class Fragment_NovelList : StatedFragment() {
 
     override fun onRestoreState(savedInstanceState: Bundle?) {
         super.onRestoreState(savedInstanceState)
-//        Log.d("CheckState", "onRestoreState Novelist")
+        Log.d("CheckState", "onRestoreState Novelist")
         var mNovelDataLink = NovelDataLink()
         mNovelsData = savedInstanceState?.getSerializable("NovelListData") as NovelsDataSet
         recycleViewBinding(mNovelDataLink.getList(mNovelsData))
@@ -65,6 +66,11 @@ class Fragment_NovelList : StatedFragment() {
     override fun onStart() {
         super.onStart()
 //        Log.d("CheckState", "onStart Novelist")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.d("CheckState", "onResume Novelist")
     }
 
     override fun onCreateView(
@@ -354,13 +360,14 @@ class Fragment_NovelList : StatedFragment() {
             }
         }
     }
+
     //由其他地方呼叫
     fun startGetNovelList() {
         addLoadingView()
         Thread {
             Runnable {
-                GetHtmlData(nowPageHtml) {
-//                    Log.d("CheckState", "go GetHtmlData Novelist")
+                GetHtmlData(homePageHtml) {
+                    //                    Log.d("CheckState", "go GetHtmlData Novelist")
                     if (mNovelsData.iconArray.size > 0) {
                         //連結recycleView
                         var mNovelDataLink = NovelDataLink()
@@ -382,5 +389,82 @@ class Fragment_NovelList : StatedFragment() {
     private fun removeLoadingView() {
         var iv_Loading = view?.findViewById<ImageView>(R.id.iv_ListLoading)
         iv_Loading?.visibility = View.GONE
+    }
+
+    //站內搜尋
+    private fun GetSearchData(urlString: String, callback: () -> Unit) {
+        mNovelsData.AllClear()
+        var url: URL = URL(urlString)
+        //==
+        var response = Jsoup.connect(url.toString()).followRedirects(false).execute()
+//        Log.d("CheckState", "GetHtmlData Novelist response " + response)
+        if (response.statusCode() == 200) {
+            //==
+            val doc = Jsoup.connect(url.toString()).timeout(60000).maxBodySize(0).get()
+            val searchNovelList = doc.select("div[class=r]")
+            var resSting = " "
+
+            if (searchNovelList.size > 0) {
+                for (i in 0..searchNovelList.size - 1) {
+                    val search_Content = searchNovelList[i].select("a").first()
+                    val search_Content_Title = search_Content.select("h3")
+                    var novelPic = "static/image/common/nothumb.jpg"
+                    var novelhtml = search_Content.attr("href")
+                    var novelname = search_Content_Title.text()
+                    mNovelsData.iconArray.add(novelPic)
+                    mNovelsData.linkArray.add(novelhtml)
+                    mNovelsData.nameArray.add(novelname)
+                }
+            }
+
+//                var mNovelDataLink = NovelDataLink()
+//                val adapter = novelRecycleViewAdaper(this.context, mNovelDataLink.getList(mNovelsData))
+//                rv_novelListRecycleView.adapter = adapter
+//                rv_novelListRecycleView.itemAnimator = DefaultItemAnimator()
+//                var mDivider = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+//                rv_novelListRecycleView.addItemDecoration(mDivider)
+//
+                totalPageValue = 1
+                nowPageValue = 1
+
+                if (nowPageValue + 1 <= totalPageValue) {
+                    nextPageValue = nowPageValue + 1
+                } else {
+                    nextPageValue = totalPageValue
+                }
+                if (prevPageValue - 1 >= 0) {
+                    prevPageValue = nowPageValue - 1
+                } else {
+                    prevPageValue = nowPageValue
+                }
+        } else {
+            activity!!.runOnUiThread {
+                Toast.makeText(this.context, "網路異常 請確認網路環境", Toast.LENGTH_SHORT).show()
+            }
+        }
+        callback.invoke()
+    }
+
+    fun startSearch(mSearch: String) {
+        addLoadingView()
+        Thread {
+            Runnable {
+                GetSearchData(
+                    "https://www.google.com/search?q=site:https://ck101.com+" + URLEncoder.encode(
+                        mSearch,
+                        "UTF-8"
+                    )
+                ) {
+                    if (mNovelsData.iconArray.size > 0) {
+                        //連結recycleView
+                        var mNovelDataLink = NovelDataLink()
+                        recycleViewBinding(mNovelDataLink.getList(mNovelsData))
+                        getActivity()!!.runOnUiThread {
+                            removeLoadingView()
+                        }
+                    }
+                }
+            }.run()
+        }.start()
     }
 }
