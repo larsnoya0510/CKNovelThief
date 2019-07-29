@@ -18,14 +18,15 @@
                 android:enabled="false" android:editable="false" android:focusableInTouchMode="false"/>
         <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" android:id="@+id/mScrollView">
+                android:layout_height="match_parent" android:id="@+id/mScrollView" android:layout_margin="3dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
                           android:orientation="vertical" android:id="@+id/ll_novel">
                 <TextView
                         android:text="@string/loading"
                         android:layout_width="match_parent"
-                        android:layout_height="match_parent" android:id="@+id/tv_Novel"
-                        android:layout_margin="5dp"/>
+                        android:layout_height="wrap_content" android:id="@+id/tv_Novel"
+                        android:layout_margin="1dp" android:scrollbars="vertical"
+                        android:background="@color/colorDark"/>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
