@@ -31,7 +31,6 @@ class MainActivity : AppCompatActivity() {
     private fun initUniTest() {
         networkStateTest = false //測試網路
     }
-
     private fun addLoadingView() {
         (window.decorView as ViewGroup).addView(loadingView)
         var retryBtn = (window.decorView as ViewGroup).findViewById<Button>(R.id.btn_retry)
