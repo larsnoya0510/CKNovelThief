@@ -359,7 +359,7 @@ class Fragment_NovelList : StatedFragment() {
         addLoadingView()
         Thread {
             Runnable {
-                GetHtmlData(nowPageHtml) {
+                GetHtmlData(homePageHtml) {
 //                    Log.d("CheckState", "go GetHtmlData Novelist")
                     if (mNovelsData.iconArray.size > 0) {
                         //連結recycleView

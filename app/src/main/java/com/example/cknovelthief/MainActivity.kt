@@ -4,11 +4,9 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.view.ViewPager
+import android.view.*
 import com.example.cknovelthief.ViewPagerAdapter.TabLayout_ViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
 import okhttp3.*
@@ -54,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         mPageTitleList.add(getResources().getString(R.string.setting))
         var mViewPagerAdapter = TabLayout_ViewPagerAdapter(mPageTitleList, m_FragmemtManager)
         vp_This.adapter = mViewPagerAdapter
-        //vp_This.offscreenPageLimit=3 //保存fragment記憶體
+        vp_This.offscreenPageLimit=3 //保存fragment記憶體
         tl_This.setupWithViewPager(vp_This)
         vp_This.addOnPageChangeListener(object : ViewPager.OnPageChangeListener{
             override fun onPageScrollStateChanged(p0: Int) {
@@ -110,5 +108,27 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_ckt, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menuItem_home ->{
+                runOnUiThread {
+                    var m_FragmemtManager = supportFragmentManager
+                    for( i in 0 until m_FragmemtManager.fragments.size) {
+                        if(m_FragmemtManager.fragments[i] is Fragment_NovelList){
+                            (m_FragmemtManager.fragments[i] as Fragment_NovelList).startGetNovelList()
+                        }
+                    }
+                    vp_This.setCurrentItem(0)
+                }
+            }
+            //else->{}
+        }
+        return super.onOptionsItemSelected(item)
     }
 }

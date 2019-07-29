@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="HomeA" android:id="@+id/menuItem_home" android:icon="@drawable/ic_home_white_24dp"
+          app:showAsAction="always"/>
+    <item android:title="SearchA" android:id="@+id/menuItem_search" android:icon="@drawable/ic_search_white_24dp"
+          app:showAsAction="always"/>
+</menu>
