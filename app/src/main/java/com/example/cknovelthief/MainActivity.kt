@@ -106,7 +106,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
             }
-
             override fun onFailure(call: Call, e: IOException) {
                 // 連線失敗
                 runOnUiThread {
