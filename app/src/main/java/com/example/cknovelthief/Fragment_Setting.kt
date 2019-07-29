@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.example.cknovelthief.DataClass.NovelDataLink
 
 class Fragment_Setting : Fragment() {
     lateinit var btn_save: Button
@@ -212,6 +213,17 @@ class Fragment_Setting : Fragment() {
         btn_save.setOnClickListener {
             savesharePreferenceProfile()
             Toast.makeText(this.context, "已儲存", Toast.LENGTH_SHORT).show()
+            var m_FragmemtManager = getActivity()!!.supportFragmentManager
+            for( i in 0 until m_FragmemtManager.fragments.size) {
+                if(m_FragmemtManager.fragments[i] is Fragment_NovelList){
+                    (m_FragmemtManager.fragments[i] as Fragment_NovelList).reloadSetting(m_FragmemtManager.fragments[i].view!!)
+                    var mNovelDataLink = NovelDataLink()
+                    (m_FragmemtManager.fragments[i] as Fragment_NovelList).recycleViewBinding(mNovelDataLink.getList((m_FragmemtManager.fragments[i] as Fragment_NovelList).mNovelsData))
+                }
+               else if(m_FragmemtManager.fragments[i] is Fragment_Novel){
+                    (m_FragmemtManager.fragments[i] as Fragment_Novel).reloadSetting(m_FragmemtManager.fragments[i].view!!)
+                }
+            }
         }
         return view
     }

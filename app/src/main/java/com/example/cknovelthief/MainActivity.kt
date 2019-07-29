@@ -1,16 +1,23 @@
 package com.example.cknovelthief
 
 import android.content.Intent
+import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.v4.view.ViewPager
+import android.support.v7.widget.DefaultItemAnimator
+import android.support.v7.widget.DividerItemDecoration
+import android.support.v7.widget.SearchView
 import android.view.*
 import com.example.cknovelthief.ViewPagerAdapter.TabLayout_ViewPagerAdapter
 import kotlinx.android.synthetic.main.activity_main.*
 import android.widget.Button
 import android.widget.Toast
 import okhttp3.*
+import org.jsoup.Jsoup
 import java.io.IOException
+import java.net.URL
+import java.net.URLEncoder
 
 class MainActivity : AppCompatActivity() {
     private lateinit var loadingView: View
@@ -111,6 +118,29 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_ckt, menu)
+
+        val searchItem = menu?.findItem(R.id.menuItem_search)
+        val m_searchView = searchItem?.actionView as SearchView
+        m_searchView.setSubmitButtonEnabled(true)
+        m_searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(searchString: String): Boolean {
+                runOnUiThread {
+                    var m_FragmemtManager = supportFragmentManager
+                    for( i in 0 until m_FragmemtManager.fragments.size) {
+                        if(m_FragmemtManager.fragments[i] is Fragment_NovelList){
+                            (m_FragmemtManager.fragments[i] as Fragment_NovelList).startSearch(searchString)
+                        }
+                    }
+                    vp_This.setCurrentItem(0)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(p0: String?): Boolean {
+                return false
+            }
+
+        })
         return true
     }
 
@@ -127,8 +157,9 @@ class MainActivity : AppCompatActivity() {
                     vp_This.setCurrentItem(0)
                 }
             }
-            //else->{}
+
         }
         return super.onOptionsItemSelected(item)
     }
+
 }
