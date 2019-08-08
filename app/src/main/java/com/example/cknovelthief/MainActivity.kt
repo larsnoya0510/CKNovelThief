@@ -86,7 +86,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun netWorkTest() {
-        //var Result : Boolean
         val client = OkHttpClient().newBuilder().build()
         val request = Request.Builder()
             .url(targetHtml)
