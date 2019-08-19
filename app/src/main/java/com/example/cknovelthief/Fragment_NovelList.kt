@@ -3,7 +3,9 @@ package com.example.cknovelthief
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.DefaultItemAnimator
 import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
@@ -12,6 +14,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.*
 import com.bumptech.glide.Glide
 import com.example.cknovelthief.DataClass.Global
@@ -211,7 +214,8 @@ class Fragment_NovelList : StatedFragment() {
             } else {
                 Glide.with(this.context).load(novelList[position].icon).into(holder.iv_icon)
             }
-            vh.tv_name.text = novelList[position].name
+            //vh.tv_name.text = novelList[position].name
+            limitTextviewMaxLine(vh.tv_name,2, novelList[position].name)
             vh.tv_name.textSize = textSize
             vh.tv_desc.text = novelList[position].link
             vh.ll_item.setOnClickListener {
@@ -291,6 +295,27 @@ class Fragment_NovelList : StatedFragment() {
                     )
                 )
             }
+        }
+        fun limitTextviewMaxLine(mtextView : TextView, mMaxLine : Int, mShowString : String){
+            var mViewTreeObserver= mtextView.viewTreeObserver
+            var mGlobalLayoutListener= object : ViewTreeObserver.OnGlobalLayoutListener{
+                @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
+                override fun onGlobalLayout() {
+                    mtextView.setText(mShowString)
+                    when{
+                        mtextView.lineCount > mMaxLine ->{
+                            var endPosition=mtextView.layout.getLineEnd(mMaxLine-1)
+                            var limitText=mShowString.subSequence(0,endPosition-3).toString()+"..."
+                            mtextView.setText(limitText)
+                        }
+                        else ->{
+                            //removeGlobalLayoutListener(mViewTreeObserver,this)
+                            mtextView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                        }
+                    }
+                }
+            }
+            mViewTreeObserver.addOnGlobalLayoutListener(mGlobalLayoutListener)
         }
     }
 

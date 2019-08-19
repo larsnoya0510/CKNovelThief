@@ -7,7 +7,8 @@
     <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".Activity_NovelShow" android:orientation="vertical" android:id="@+id/ll_main">
+            tools:context=".Activity_NovelShow" android:orientation="vertical" android:id="@+id/ll_main"
+    >
 
         <EditText
                 android:layout_width="match_parent"
@@ -18,15 +19,20 @@
                 android:enabled="false" android:editable="false" android:focusableInTouchMode="false"/>
         <android.support.v4.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent" android:id="@+id/mScrollView" android:layout_margin="3dp">
+                android:layout_height="match_parent" android:id="@+id/mScrollView"
+                android:scrollbarStyle="insideOverlay" android:scrollbarThumbHorizontal="@color/colorWhite"
+                android:scrollbarThumbVertical="@color/colorWhite" android:scrollbars="vertical"
+                android:scrollbarSize="4dp">
             <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content"
-                          android:orientation="vertical" android:id="@+id/ll_novel">
+                          android:orientation="vertical" android:id="@+id/ll_novel"
+                          android:background="@color/colorDark">
                 <TextView
                         android:text="@string/loading"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" android:id="@+id/tv_Novel"
-                        android:layout_margin="1dp" android:scrollbars="vertical"
-                        android:background="@color/colorDark"/>
+                        android:scrollbars="vertical"
+                        android:background="@color/colorDark" android:layout_marginLeft="3dp"
+                        android:layout_marginRight="3dp"/>
             </LinearLayout>
         </android.support.v4.widget.NestedScrollView>
     </LinearLayout>
