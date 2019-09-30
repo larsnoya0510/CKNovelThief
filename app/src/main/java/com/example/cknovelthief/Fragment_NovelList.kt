@@ -142,6 +142,8 @@ class Fragment_NovelList : StatedFragment() {
                     mNovelsData.linkArray.add(novelhtml)
                     mNovelsData.nameArray.add(novelname)
                 }
+                var SAA=0
+                println(SAA)
             }
             //取得全部頁數
             if (selectPage_content.size > 0) {
@@ -214,8 +216,8 @@ class Fragment_NovelList : StatedFragment() {
             } else {
                 Glide.with(this.context).load(novelList[position].icon).into(holder.iv_icon)
             }
-            //vh.tv_name.text = novelList[position].name
-            limitTextviewMaxLine(vh.tv_name,2, novelList[position].name)
+            vh.tv_name.text = novelList[position].name
+//            limitTextviewMaxLine(vh.tv_name,2, novelList[position].name)
             vh.tv_name.textSize = textSize
             vh.tv_desc.text = novelList[position].link
             vh.ll_item.setOnClickListener {
@@ -307,10 +309,10 @@ class Fragment_NovelList : StatedFragment() {
                             var endPosition=mtextView.layout.getLineEnd(mMaxLine-1)
                             var limitText=mShowString.subSequence(0,endPosition-3).toString()+"..."
                             mtextView.setText(limitText)
+                            if(mViewTreeObserver.isAlive) mViewTreeObserver.removeOnGlobalLayoutListener(this)
                         }
                         else ->{
-                            //removeGlobalLayoutListener(mViewTreeObserver,this)
-                            mtextView.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                            if(mViewTreeObserver.isAlive) mViewTreeObserver.removeOnGlobalLayoutListener(this)
                         }
                     }
                 }
